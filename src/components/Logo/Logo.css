@@ -17,6 +17,7 @@
     /* height: auto; */
     animation: float 2.5s ease-in-out infinite;
     image-rendering: pixelated;
+    filter: drop-shadow(0 0 20px rgba(0,0,0,0.3));
 }
 
 .img_container {
@@ -24,6 +25,11 @@
     justify-content: center;
     align-items: center;
     position: relative;
+  }
+
+  .subtitle{
+    margin-top: 30px;
+    color: rgba(255, 255, 255, 0.9);
   }
 
   @keyframes float {
