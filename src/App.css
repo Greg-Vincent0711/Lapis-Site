@@ -2,15 +2,13 @@
     display: flex;
     height: 100vh;
     align-items: flex-start;
-    font-family: 'Noto Sans';
 }
   
 .sidebar{
-    width: 250px;
-    padding: 20px;
+    width: 200px;
     margin-top: 2rem;
-    position: sticky;
-    font-size: 1.25rem;
+    position: fixed;
+    font-size: 1.3rem;
     color: white;
     top: 0;
 }
@@ -22,11 +20,13 @@
 .sidebar li{
     margin-bottom: 2.5rem;
 }
+
   
 .main-content {
     flex-grow: 1;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content:center;
     align-items: center;
     text-align: center;
     padding: 20px;

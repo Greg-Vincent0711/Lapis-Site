@@ -1,0 +1,33 @@
+.logo_section{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: white;
+}
+
+.logo_section h1{
+    font-size: 3rem;
+}
+
+.logo_section h2{
+    font-size: 1.5rem;
+}
+
+.logo_section img{
+    /* height: auto; */
+    animation: float 2.5s ease-in-out infinite;
+    image-rendering: pixelated;
+}
+
+.img_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-60px); }
+    100% { transform: translateY(0px); }
+  }
