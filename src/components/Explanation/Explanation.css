@@ -1,0 +1,22 @@
+.exp_section{
+    /* top right bottom left */
+    padding: 10vh 18vw 0 18vw;
+}
+
+#section_title{
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.exp_section h3{
+    text-align: left;
+}
+
+#ex_paragraph{
+    text-align: start;
+    font-size: 1.15rem;
+    line-height: 1.6;
+}
+
+
+

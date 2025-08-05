@@ -1,0 +1,91 @@
+.discord-card {
+    background: #2b2d31;
+    border-radius: 10px;
+    padding: 1rem;
+    width: 500px;
+    color: white;
+    font-family: 'gg sans', 'Noto Sans', sans-serif;
+    border: 1px solid #3e4044;
+    margin: 0 auto;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .bot-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 0.5rem;
+  }
+  
+  .bot-name {
+    font-weight: bold;
+    margin-right: 0.5rem;
+  }
+  
+  .bot-tag {
+    background: #5865f2;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 3px;
+    margin-right: 0.5rem;
+  }
+  
+  .time-stamp {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.75rem;
+  }
+  
+  .content-box {
+    background: #1e1f22;
+    border-left: 3px solid #5865f2;
+    padding: 1rem;
+    border-radius: 5px;
+  }
+  
+  .content-box h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .content-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .content-box li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .command {
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .button-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
+  
+  .button-row button {
+    background: #1e1f22;
+    border: 1px solid #3e4044;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .button-row button:hover {
+    background: #3e4044;
+  }
+  

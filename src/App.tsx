@@ -1,7 +1,7 @@
 import React from 'react';
 import Logo from './components/Logo/Logo';
 import Explanation from './components/Explanation/Explanation';
-import Design from './components/SystemDesign/Design';
+import Design from './components/SystemDesign/SystemDesign';
 import "./App.css"
 
 const App: React.FC = () => {
