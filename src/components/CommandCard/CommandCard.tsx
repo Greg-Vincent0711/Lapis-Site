@@ -1,61 +1,64 @@
-import { useState } from 'react';
-import './CommandCard.css';
-
-const commands = [
-  {
-    title: "Lapis' Commands",
-    items: [
-      { command: "!ss", desc: "Set your seed – passed to C executable to find info about your world." },
-      { command: "!deleteImg", desc: "Delete an image stored for a location." },
-      { command: "!saveImg", desc: "Store an image for a saved place." },
-    ],
-  },
-  {
-    title: "Advanced Commands",
-    items: [
-      { command: "!listCoords", desc: "List all saved coordinates in your world." },
-      { command: "!exportData", desc: "Export your saved locations as a .json file." },
-    ],
-  },
-  // Add more sets as needed
-];
-
+import {useState} from "react"
+import "./CommandCard.css"
+import commandInfo from "./commands.json";
 export default function CommandCard() {
   const [index, setIndex] = useState(0);
+  
 
   const handlePrev = () => {
-    setIndex((prev) => (prev === 0 ? commands.length - 1 : prev - 1));
+    setIndex((prev) => (prev === 0 ? commandInfo.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setIndex((prev) => (prev === commands.length - 1 ? 0 : prev + 1));
+    setIndex((prev) => (prev === commandInfo.length - 1 ? 0 : prev + 1));
   };
 
-  const current = commands[index];
+  const current = commandInfo[index];
 
   return (
-    <div className="discord-card">
-      <div className="header">
-        <img src="/lapis-icon.png" alt="Lapis" className="bot-icon" />
-        <span className="bot-name">Lapis</span>
-        <span className="bot-tag">APP</span>
-        <span className="time-stamp">1:11 PM</span>
-      </div>
-
-      <div className="content-box">
-        <h3>{current.title}</h3>
-        <ul>
-          {current.items.map((item, idx) => (
-            <li key={idx}>
-              <span className="command">{item.command}</span> – {item.desc}
-            </li>
+    <div className="command-card">
+      <div className="command-header">
+        <div className="command-indicator">
+          <span className="command-prefix">/</span>
+          <h3 className="command-name">{current.command}</h3>
+        </div>
+        <div className="pagination-dots">
+          {commandInfo.map((_, i) => (
+            <div 
+              key={i} 
+              className={`dot ${i === index ? 'active' : ''}`}
+              onClick={() => setIndex(i)}
+            />
           ))}
-        </ul>
+        </div>
+      </div>
+      
+      <div className="command-content">
+        <p className="command-description">{current.description}</p>
       </div>
 
-      <div className="button-row">
-        <button onClick={handlePrev}>&lt;</button>
-        <button onClick={handleNext}>&gt;</button>
+      <div className="navigation-controls">
+        <button 
+          onClick={handlePrev} 
+          className="nav-button prev"
+          aria-label="Previous command"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M10 2L4 8l6 6v-4l-2-2 2-2V2z"/>
+          </svg>
+        </button>
+        <span className="command-counter">
+          {index + 1} of {commandInfo.length}
+        </span>
+        <button 
+          onClick={handleNext} 
+          className="nav-button next"
+          aria-label="Next command"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M6 2v4l2 2-2 2v4l6-6L6 2z"/>
+          </svg>
+        </button>
       </div>
     </div>
   );

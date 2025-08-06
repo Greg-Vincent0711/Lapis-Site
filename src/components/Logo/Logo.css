@@ -6,7 +6,7 @@
 }
 
 .logo_section h1{
-    font-size: 3rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
 }
 
 .logo_section h2{
