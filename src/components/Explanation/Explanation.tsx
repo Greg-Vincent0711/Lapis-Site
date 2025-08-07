@@ -9,16 +9,15 @@ export default function Explanation({ id = "explanation" }) {
             <h2 className="subtitle">Some brief ramblings on why I made this...</h2>
           </header>
   
-          <div className="story-content">
-            <p className="story-text">
+          <div className="expl-content">
+            <p className="expl-text">
               During one of many 2 week Minecraft phases, I was tired of having to take a screenshot of 
               new discoveries or important locations in my Minecraft world, and then haphazardly 
               scroll through a bunch of photos on my phone to find what I was looking for a couple days later.
+              And as such I got to work on building something I thought was pretty cool that quickly became complex.
             </p>
-            <p className="story-text">
-              This gave me the idea to store information somewhere and grab it through Discord. Originally, 
-              that's all Lapis was going to be! Then I got intrigued by the idea of turning this into an 
-              in-depth professional development project. And here we are.
+            <p className="expl-text">
+              The command descriptions below are general, send !helpme to get specific usage details.
             </p>
           </div>
   

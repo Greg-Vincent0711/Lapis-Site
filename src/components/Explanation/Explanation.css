@@ -34,17 +34,17 @@
     font-style: italic;
   }
   
-  .story-content {
+  .expl-content {
     max-width: 800px;
     /* top right bottom left */
-    margin: 0 auto 4rem auto;
+    margin: 0 auto 2rem auto;
     animation: fadeInUp 0.8s ease-out 0.2s both;
   }
   
-  .story-text {
+  .expl-text {
     font-size: 1.125rem;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
     opacity: 0.9;
     text-align: left;
   }

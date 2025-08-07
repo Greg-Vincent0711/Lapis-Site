@@ -1,47 +1,51 @@
 [
     {
-      "command": "save",
+      "command": "!save",
       "description": "A name and coordinate pair is saved to the DB(more on this in the next section).\nEach coordinate pair makes use of the user's discord ID to differentiate between other users."
     },
     {
-      "command": "get",
+      "command": "!get",
       "description": "Pretty self-explanatory. What's cool about this method is that Lapis will\nprogrammatically get the user's ID, so they will always only retrieve their saved coordinates."
     },
     {
-      "command": "update",
+      "command": "!update",
       "description": "Update a location's coordinates."
     },
     {
-      "command": "delete",
-      "description": "Delete a saved location and its corresponding image if one exists."
+      "command": "!delete",
+      "description": "Delete a saved location and its corresponding image if one exists.\nSame deal with Lapis' other CRUD operations - gets the user ID automatically."
     },
     {
-      "command": "list",
+      "command": "!list",
       "description": "Probably the most useful command, shows every location a user has made."
     },
     {
-      "command": "saveImage",
+      "command": "!saveImg",
       "description": "Store an image for a saved location."
     },
     {
-      "command": "deleteImg",
+      "command": "!deleteImg",
       "description": "Delete an image stored for a location."
     },
     {
-      "command": "setSeed",
-      "description": "Set your seed to pass to the C executable for world information."
+      "command": "!setSeed aka '!ss'",
+      "description": "Lapis can lookup information for an MC world, the seed used is saved to a user's discord ID and cached for frequent use."
     },
     {
-      "command": "getSeed",
+      "command": "!getSeed aka '!gs'",
       "description": "Retrieve the seed for a user."
     },
     {
-      "command": "nearest",
+      "command": "!nearest",
       "description": "Find the nearest structure or biome."
     },
     {
-      "command": "spawnNear",
-      "description": "Find up to 10 seeds matching criteria."
+      "command": "!spawnNear aka '!spn'",
+      "description": "Find up to 10 seeds matching some criteria."
+    },
+    {
+      "command": "!helpme",
+      "description": "All of Lapis' commands, in-depth on usage w/ examples."
     }
   ]
   

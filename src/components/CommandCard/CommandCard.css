@@ -5,7 +5,9 @@
   border-radius: 16px;
   padding: 2rem;
   max-width: 600px;
-  height: 200px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
   box-shadow: 
     /* X-offset Y-offset blur radius */
@@ -55,6 +57,7 @@
 }
 
 .dot {
+  /* creates a circle */
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -73,13 +76,16 @@
 }
 
 .command-content {
+  flex: 1;
   margin-bottom: 2rem;
 }
 
 .command-description {
-  font-size: 1.125rem;
+  font-size: 1.155rem;
+  line-height: 1.6;
   margin: 0 0 1rem 0;
   font-weight: 500;
+  text-align: start;
 }
 
 .command-notes {

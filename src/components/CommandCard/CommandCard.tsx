@@ -17,7 +17,7 @@ export default function CommandCard() {
 
   return (
     <div className="command-card">
-      <div className="command-header">
+      <header className="command-header">
         <div className="command-indicator">
           <span className="command-prefix">/</span>
           <h3 className="command-name">{current.command}</h3>
@@ -31,11 +31,11 @@ export default function CommandCard() {
             />
           ))}
         </div>
-      </div>
+      </header>
       
-      <div className="command-content">
+      <main className="command-content">
         <p className="command-description">{current.description}</p>
-      </div>
+      </main>
 
       <div className="navigation-controls">
         <button 
