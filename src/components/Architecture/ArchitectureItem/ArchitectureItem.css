@@ -1,0 +1,7 @@
+.main_item{
+    background-color: inherit;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    border: 1px solid black
+}

@@ -1,6 +1,7 @@
 import {useState} from "react"
 import "./CommandCard.css"
 import commandInfo from "./commands.json";
+
 export default function CommandCard() {
   const [index, setIndex] = useState(0);
   
