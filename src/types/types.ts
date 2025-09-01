@@ -17,7 +17,7 @@ export type NodePosition = {
     toPos: { x: number, y: number};
 }
 
-export type ArchitectureItem = {
+export type ArchitectureItemType = {
     icon_img: string;
     popup_text: string;
 }

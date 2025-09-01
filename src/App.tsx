@@ -1,8 +1,15 @@
 import React from 'react';
 import Logo from './components/Logo/Logo';
 import Explanation from './components/Explanation/Explanation';
+import ArchitectureDiagram from './components/Architecture/ArchitectureDiagram';
 import "./App.css"
-
+/**
+ * TODO
+ * - System architecture portion
+ * - Responsive design setup 
+ * - Accessibility stuff
+ * - Adding some other advanced feature(i11n maybe)
+ */
 const App: React.FC = () => {
   return (
     <div className="app-container">
@@ -16,6 +23,7 @@ const App: React.FC = () => {
       <main className="main-content">
             <Logo id={"logo"}/>
             <Explanation id={"ex"}/>
+            <ArchitectureDiagram id={"design"}/>
       </main>
     </div>
   );
