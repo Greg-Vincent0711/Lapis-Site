@@ -3,7 +3,7 @@
  * TODO
  */
 import "./ArchitectureDiagram.css";
-import { GraphCanvas, darkTheme, lightTheme } from "reagraph";
+import { GraphCanvas, lightTheme } from "reagraph";
 import ArchitectureItem from "./ArchitectureItem/ArchitectureItem";
 import gw from "../../assets/system_design/apigateway.svg";
 import discord from "../../assets/system_design/discord.svg";
@@ -16,7 +16,6 @@ import sm from "../../assets/system_design/secrets_manager.svg";
 const serviceNodes = [
     {
         id: '1',
-        label: 'discord',
         data: {
             icon_img: discord,
             popup_text: "Discord"
@@ -24,7 +23,6 @@ const serviceNodes = [
       },
       {
         id: '2',
-        label: 'apigw',
         data: {
             icon_img: gw,
             popup_text: "API Gateway"
@@ -32,7 +30,6 @@ const serviceNodes = [
       },
       {
         id: '3',
-        label: 'db',
         data: {
             icon_img: dynamodb,
             popup_text: "DynamoDB"
@@ -40,7 +37,6 @@ const serviceNodes = [
       },
       {
         id: '4',
-        label: 's3',
         data: {
             icon_img: s3,
             popup_text: "S3"
@@ -48,7 +44,6 @@ const serviceNodes = [
       },
       {
         id: '5',
-        label: 'lambda',
         data: {
             icon_img: lambda,
             popup_text: "Lambda"
@@ -56,7 +51,6 @@ const serviceNodes = [
       },
       {
         id: '6',
-        label: 'sm',
         data: {
             icon_img: sm,
             popup_text: "Secrets Manager"
@@ -122,44 +116,26 @@ const connections = [
     }
 ];
 
-/**
- * 
- * Deep Indigo → #2A1F72
-
-Royal Purple → #5A2D91
-
-Dark Slate Blue → #2C3E91
-
-Midnight Blue → #1B1F3B
-
-Dark Violet → #3E1D5C
- * 
- */
-
-
-// background: linear-gradient(135deg, #5e5eff, #4a4aff);
 export default function ArchitectureDiagram({id} : {id: string}){
     return(
         <section id={id} className="architecture_section">
             <header>
                 <h1>System Architecture</h1>
             </header>
-            <div style={{ position: "relative", width: '90%', height: '75%', background: "transparent"}}>
+            <div style={{ position: "relative", width: '90%', height: '75%'}}>
                 <GraphCanvas
                         layoutType="hierarchicalTd"
                         nodes={serviceNodes}
                         edges={connections}
-                        glOptions={{
-                            alpha: true,
-                            preserveDrawingBuffer: true
-                        }}
                         theme={{
                             ...lightTheme,
                             canvas: {
                                 ...lightTheme.canvas,
+                                // transparent background
                                 background: undefined
                             }
                         }}
+                        maxDistance={1020}
                         renderNode={({ node }) => (
                             <ArchitectureItem
                             icon_img={node.data.icon_img}
