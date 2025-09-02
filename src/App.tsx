@@ -1,7 +1,7 @@
 import React from 'react';
 import Logo from './components/Logo/Logo';
 import Explanation from './components/Explanation/Explanation';
-import ArchitectureDiagram from './components/Architecture/ArchitectureDiagram';
+import ArchitectureDiagram from './components/Architecture/ArchitectureDiagram/ArchitectureDiagram';
 import "./App.css"
 /**
  * TODO
