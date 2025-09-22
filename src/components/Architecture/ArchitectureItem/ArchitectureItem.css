@@ -1,8 +1,8 @@
 .node_style{
     background-color: inherit;
     border-radius: 50%;
-    width: 80px;
-    height: 80px;
+    width: 76px;
+    height: 76px;
     border: 1px solid black;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);

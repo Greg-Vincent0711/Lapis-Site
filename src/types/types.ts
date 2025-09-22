@@ -8,6 +8,14 @@ export type ArchitectureNode = {
     color: string;
     icon: string
 }
+export type ArchitectureDataType = {
+    id: string;
+    label: string;
+    data: {
+        icon_img: string;
+        popup_text: string
+    }
+}
 
 export type NodePosition = {
     id: string;
@@ -19,5 +27,5 @@ export type NodePosition = {
 
 export type ArchitectureItemType = {
     icon_img: string;
-    popup_text: string;
+    onClick: () => void;
 }
