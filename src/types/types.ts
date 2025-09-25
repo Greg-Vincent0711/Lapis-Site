@@ -27,5 +27,7 @@ export type NodePosition = {
 
 export type ArchitectureItemType = {
     icon_img: string;
-    onClick: () => void;
+    details: string;
+    isClicked: boolean;
+    onClick: (event: React.MouseEvent) => void;
 }
