@@ -10,11 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^6.15.1",
     "@react-three/drei": "^10.7.4",
-    "oidc-client-ts": "^3.3.0",
+    "aws-amplify": "^6.15.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-oidc-context": "^3.3.0",
     "reagraph": "^4.30.0"
   },
   "devDependencies": {

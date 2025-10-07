@@ -1,0 +1,6 @@
+.sign_in{
+    display: flex;
+    /* flex-direction: column; */
+    left: 0;
+    top: 0;
+}

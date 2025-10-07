@@ -31,3 +31,21 @@ export type ArchitectureItemType = {
     isClicked: boolean;
     onClick: (event: React.MouseEvent) => void;
 }
+
+export type User = {
+    username: string;
+    userId: string;
+    name?: string;
+}
+
+export type AuthContextType = {
+    // in between state
+    isLoading: boolean;
+    // user information that other components need
+    // currentUser infers isSignedIn too
+    currentUser: User | null;
+    userSignUp: (name: string, email: string, password: string) => Promise<void>;
+    userSignIn: (email: string, password: string) => Promise<void>;
+    // gets info from getCurrentUser
+    userSignOut: () => Promise<void>;    
+  }

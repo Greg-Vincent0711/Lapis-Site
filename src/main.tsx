@@ -1,21 +1,15 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import configureAmplify from "./amplify-configure.ts";
 import './index.css'
 import App from './App.tsx'
-import { AuthProvider } from "react-oidc-context";
+import AuthProvider from './context/AuthProvider.tsx';
 
-const cognitoAuthConfig = {
-  authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_ytzLAQXvz",
-  client_id: "4fv4br59s8ub1gt7hmmhkfi5sv",
-  redirect_uri: "https://d84l1y8p4kdic.cloudfront.net",
-  response_type: "code",
-  scope: "phone openid email",
-};
-
+configureAmplify();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider {...cognitoAuthConfig}>
-      <App />
-    </AuthProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
   </StrictMode>,
 )
