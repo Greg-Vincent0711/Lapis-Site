@@ -18,7 +18,7 @@ const App: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
   const toggleLogin = () => setShowLogin(!showLogin);
   const authCTX = useContext(AuthContext);
-
+  console.log(authCTX.currentUser)
   return (
       <div className="app-container">
         <section className="sidebar">
@@ -26,9 +26,10 @@ const App: React.FC = () => {
             <li><a href="#logo">Lapis.bot</a></li>
             <li><a href="#ex">What can Lapis do?</a></li>
             <li><a href="#design">System Architecture</a></li>
+            {authCTX.currentUser !== null && <li><a> Saved Locations </a></li>}
           </ul>
         </section>
-        {/**Login Section */}
+        {/** This button being pressed renders the modal */}
         <section className="login_bar">
           <button className="login_button" onClick={toggleLogin}>Sign In</button>
         </section>
