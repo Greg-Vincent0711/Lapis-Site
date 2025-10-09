@@ -29,9 +29,10 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
         checkAuth();
     }, [])
 
+    
     const userSignUp = async (name: string, email: string, password: string) => {
         try{
-            await signUp({
+            const { nextStep } =  await signUp({
                 username: email,
                 password: password,
                 options: {
@@ -40,6 +41,7 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
                     }
                 }
             });
+            return nextStep;
         // errors bubble up for frontend to handle
         } catch(error){
             throw error;
@@ -58,10 +60,11 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
         // error is caught by the login component
         setIsLoading(true);
         try{            
-            await signIn({username: email, password: password})
-            const user = await getCurrentUser();
-            const name = (await fetchUserAttributes()).name;
-            setCurrentUser({...user, name});
+                const { nextStep } = await signIn({username: email, password: password})
+                const user = await getCurrentUser();
+                const name = (await fetchUserAttributes()).name;
+                setCurrentUser({...user, name});
+                return nextStep;
             } 
         finally{
             setIsLoading(false);

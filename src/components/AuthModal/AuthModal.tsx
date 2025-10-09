@@ -1,20 +1,20 @@
 import "../../App.css";
-import AuthContext from "../../context/authContext";
+import useAuth from "../../context/useAuth";
 import "./AuthModal.css";
 import type { FormEvent } from "react";
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle: () => void} ) {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  
   const [error, setError] = useState("");
   const [modalData, setModalData] = useState({
     name: "",
     email: "",
     password: ""
   });
-  const authCTX = useContext(AuthContext);
-
+  const {isLoading, userSignIn, userSignUp} = useAuth();
+  
   useEffect(() => { 
     if(error !== ""){
       const timer = setTimeout(() => {
@@ -30,7 +30,7 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
 
   // one lowercase, one uppercase, one number, 8-20 characters
   const validatePassword = (password: string) => {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/.test(password)
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/.test(password);
   }
   
   const validateName = (name: string) => {
@@ -50,7 +50,6 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
    */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();    
-    setIsLoading(true);
     setError("");
     const emailValid = validateEmail(modalData.email);
     const passwordValid = validatePassword(modalData.password)
@@ -59,14 +58,28 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
     if(emailValid && passwordValid){
       if(isSignUp){
         if(validateName(modalData.name)){
-          authCTX.userSignUp(modalData.name, modalData.email, modalData.password);
+          try{
+            await userSignUp(modalData.name, modalData.email, modalData.password);
+            // if this works, we need to confirm the signin
+            // for that to work, we need to make it so that the auth fn called returns something
+
+            toggle();
+          // catch error if signUp fails
+          } catch(error){
+            setError("There was an error during signup.");
+          }
         } else{
           // error state stating that name is invalid
-          setError("The name you attempted to sign up with is invalid.")
+          setError("The name you attempted to sign up with is invalid.");
         }
-      // signIn
       } else{
-        authCTX.userSignIn(modalData.email, modalData.password);
+        try{
+          // signIn
+          await userSignIn(modalData.email, modalData.password);
+          toggle();
+        } catch(error){
+          setError("There was an error during signin.");
+        }
       }
     }
     // render an error if a combo of email and password is invalid
@@ -81,7 +94,6 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
           : ""
       );      
     }
-    setIsLoading(false);
   };
 
   return (

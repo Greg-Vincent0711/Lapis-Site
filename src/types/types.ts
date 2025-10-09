@@ -1,3 +1,4 @@
+import type { SignInOutput } from "@aws-amplify/auth";
 export type ArchitectureNode = {
     id: string;
     title: string;
@@ -44,8 +45,8 @@ export type AuthContextType = {
     // user information that other components need
     // currentUser infers isSignedIn too
     currentUser: User | null;
-    userSignUp: (name: string, email: string, password: string) => Promise<void>;
-    userSignIn: (email: string, password: string) => Promise<void>;
+    userSignUp: (name: string, email: string, password: string) => Promise<SignInOutput | null>;
+    userSignIn: (email: string, password: string) => Promise<SignInOutput | null>;
     // gets info from getCurrentUser
     userSignOut: () => Promise<void>;    
   }

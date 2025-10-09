@@ -1,14 +1,13 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import Logo from './components/Logo/Logo';
 import Explanation from './components/Explanation/Explanation';
 import ArchitectureDiagram from './components/Architecture/ArchitectureDiagram/ArchitectureDiagram';
 import AuthModal from './components/AuthModal/AuthModal';
 import "./App.css"
-import AuthContext from './context/authContext';
+import useAuth from './context/useAuth';
 
 /**
  * TODO
- * - Custom Login page
  * - Protected route to show users locations they saved
  * - Responsive design setup 
  * - Accessibility stuff
@@ -16,9 +15,20 @@ import AuthContext from './context/authContext';
  */
 const App: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
-  const toggleLogin = () => setShowLogin(!showLogin);
-  const authCTX = useContext(AuthContext);
-  console.log(authCTX.currentUser)
+  const toggleModal = () => setShowLogin(!showLogin);
+  const { currentUser, userSignOut } = useAuth();
+
+  const handleClick = () => {
+    if(currentUser == null){
+      toggleModal();
+    } else{
+      /**
+       * we don't need to toggle, since the modal shouldn't be open here
+       */
+      userSignOut();
+    }
+  }
+
   return (
       <div className="app-container">
         <section className="sidebar">
@@ -26,12 +36,12 @@ const App: React.FC = () => {
             <li><a href="#logo">Lapis.bot</a></li>
             <li><a href="#ex">What can Lapis do?</a></li>
             <li><a href="#design">System Architecture</a></li>
-            {authCTX.currentUser !== null && <li><a> Saved Locations </a></li>}
+            {/** Add the link feature for this */}
+            {currentUser !== null && <li><a> Saved Locations </a></li>}
           </ul>
         </section>
-        {/** This button being pressed renders the modal */}
         <section className="login_bar">
-          <button className="login_button" onClick={toggleLogin}>Sign In</button>
+            <button className="login_button" onClick={handleClick}>{currentUser == null ? "Sign In" : "Sign Out"}</button>
         </section>
 
         <main className="main-content">
@@ -39,7 +49,7 @@ const App: React.FC = () => {
               <Explanation id={"ex"}/>
               <ArchitectureDiagram id={"design"}/>
         </main>
-        <AuthModal showLogin={showLogin} toggle={toggleLogin}/>
+        <AuthModal showLogin={showLogin} toggle={toggleModal}/>
       </div>
   );
 };
