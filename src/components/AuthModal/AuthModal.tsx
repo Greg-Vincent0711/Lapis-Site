@@ -1,3 +1,4 @@
+import { confirmSignUp } from "@aws-amplify/auth";
 import "../../App.css";
 import useAuth from "../../context/useAuth";
 import "./AuthModal.css";
@@ -6,12 +7,13 @@ import { useState, useEffect } from "react";
 
 export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle: () => void} ) {
   const [isSignUp, setIsSignUp] = useState(false);
-  
   const [error, setError] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState(false);
   const [modalData, setModalData] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
+    confirmationCode: ""
   });
   const {isLoading, userSignIn, userSignUp} = useAuth();
   
@@ -37,53 +39,66 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
     return /^[A-Za-z\s'-]{1,20}$/.test(name.trim());
   };
 
-  const updateLoginData = (field: "email" | "password" | "name", value: string) => {
+  const updateLoginData = (field: "email" | "password" | "name" | "confirmationCode", value: string) => {
     setModalData((prev) => ({
       ...prev,
       [field]: value
     }))
   }
 
-  /**
-   * check if we're using isSignUp or not, switch the function called
-   * validate the name, email and password
-   */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();    
-    setError("");
+    setError("");    
+
+    if (confirmEmail) {
+      try {
+        const { nextStep } = await confirmSignUp({
+          username: modalData.email,
+          confirmationCode: modalData.confirmationCode
+        });
+        if (nextStep.signUpStep === "DONE") {
+          setConfirmEmail(false);
+          toggle();
+        } else {
+          setError("Email confirmation incomplete. Please try again.");
+        }
+      } catch (error) {
+        setError("Invalid confirmation code. Please try again.");
+      }
+      return;
+    }
+  
     const emailValid = validateEmail(modalData.email);
-    const passwordValid = validatePassword(modalData.password)
-
-    // somewhere check if a user is already signed up
-    if(emailValid && passwordValid){
-      if(isSignUp){
-        if(validateName(modalData.name)){
-          try{
-            await userSignUp(modalData.name, modalData.email, modalData.password);
-            // if this works, we need to confirm the signin
-            // for that to work, we need to make it so that the auth fn called returns something
-
-            toggle();
-          // catch error if signUp fails
-          } catch(error){
+    const passwordValid = validatePassword(modalData.password);
+  
+    if (emailValid && passwordValid) {
+      if (isSignUp) {
+        if (validateName(modalData.name)) {
+          try {
+            const { nextStep } = await userSignUp(modalData.name, modalData.email, modalData.password);
+            
+            if (nextStep.signUpStep === "CONFIRM_SIGN_UP") {
+              // Just show the confirmation form, don't call confirmSignUp yet
+              setConfirmEmail(true);
+            } else if (nextStep.signUpStep === "DONE") {
+              // Sign up completed without confirmation needed
+              toggle();
+            }
+          } catch (error) {
             setError("There was an error during signup.");
           }
-        } else{
-          // error state stating that name is invalid
+        } else {
           setError("The name you attempted to sign up with is invalid.");
         }
-      } else{
-        try{
-          // signIn
+      } else {
+        try {
           await userSignIn(modalData.email, modalData.password);
           toggle();
-        } catch(error){
+        } catch (error) {
           setError("There was an error during signin.");
         }
       }
-    }
-    // render an error if a combo of email and password is invalid
-    else{
+    } else {
       setError(
         !emailValid && !passwordValid
           ? "Invalid email & password."
@@ -101,47 +116,76 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
       // clicking off the overlay disables
       <main className="overlay" onClick={toggle}>
         <form className="modal_form" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
-          <h2 className="modal_title">{isSignUp ? "Create an Account" : "Welcome Back"}</h2>
           
-          <input 
-            placeholder="Email" 
-            type="email"
-            value={modalData.email} 
-            onChange={(e) => updateLoginData("email", e.target.value)}
-            required
-          />
-          <input 
-            placeholder="Password" 
-            type="password" 
-            value={modalData.password} 
-            onChange={(e) => updateLoginData("password", e.target.value)}
-            required
-          />
-          {isSignUp && (
-            <input 
-              placeholder="Name" 
-              value={modalData.name} 
-              onChange={(e) => updateLoginData("name", e.target.value)}
-              required
-            />
+          {confirmEmail ? (
+            // Confirmation code view
+            <>
+              <h2 className="modal_title">Confirm Your Email</h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)', textAlign: 'center' }}>
+                Please enter the confirmation code sent to your email
+              </p>
+              <input 
+                placeholder="Confirmation Code" 
+                type="text"
+                value={modalData.confirmationCode || ''}
+                onChange={(e) => updateLoginData("confirmationCode", e.target.value)}
+                required
+              />
+              {error && <p className="error_message">{error}</p>}
+              <button 
+                type="submit" 
+                className="submit_button" 
+                disabled={isLoading}
+              >
+                {isLoading ? "Verifying..." : "Confirm Email"}
+              </button>
+            </>
+          ) : (
+            // Regular sign in/up view
+            <>
+              <h2 className="modal_title">{isSignUp ? "Create an Account" : "Welcome Back"}</h2>
+              <input 
+                placeholder="Email" 
+                type="email"
+                value={modalData.email} 
+                onChange={(e) => updateLoginData("email", e.target.value)}
+                required
+              />
+              <input 
+                placeholder="Password" 
+                type="password" 
+                value={modalData.password} 
+                onChange={(e) => updateLoginData("password", e.target.value)}
+                required
+              />
+              {isSignUp && (
+                <input 
+                  placeholder="Name" 
+                  value={modalData.name} 
+                  onChange={(e) => updateLoginData("name", e.target.value)}
+                  required
+                />
+              )}
+              
+              {error && <p className="error_message">{error}</p>}
+              
+              <button 
+                type="submit" 
+                className="submit_button" 
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+              </button>
+              
+              <div className="sign_in">
+                {isSignUp ? "Already have an account?" : "Don't have an account?"}
+                <button type="button" onClick={() => setIsSignUp(!isSignUp)}>
+                  {isSignUp ? "Sign In" : "Sign Up"}
+                </button>
+              </div>
+            </>
           )}
           
-          {error && <div className="error_message">{error}</div>}
-          
-          <button 
-            type="submit" 
-            className="submit_button" 
-            disabled={isLoading}
-          >
-            {isLoading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
-          </button>
-          
-          <div className="sign_in">
-            {isSignUp ? "Already have an account?" : "Don't have an account?"}
-            <button type="button" onClick={() => setIsSignUp(!isSignUp)}>
-              {isSignUp ? "Sign In" : "Sign Up"}
-            </button>
-          </div>
         </form>
       </main>
     )

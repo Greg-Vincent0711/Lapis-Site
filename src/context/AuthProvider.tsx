@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from "react";
 // import AuthContext from "./authContext";
 import type { AuthContextType, User } from "../types/types";
-import { getCurrentUser, signIn, signOut, signUp, fetchAuthSession, fetchUserAttributes } from "@aws-amplify/auth";
+import { getCurrentUser, signIn, signOut, signUp, fetchAuthSession, fetchUserAttributes, type SignInOutput } from "@aws-amplify/auth";
 import AuthContext from "./authContext";
 export default function AuthProvider({ children } : {children: React.ReactNode}){
     const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +32,11 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
     
     const userSignUp = async (name: string, email: string, password: string) => {
         try{
-            const { nextStep } =  await signUp({
+            /**
+             * we need to return SignUpOutput
+             * so that email verification can be completed
+             */
+            const signUpResult =  await signUp({
                 username: email,
                 password: password,
                 options: {
@@ -41,7 +45,7 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
                     }
                 }
             });
-            return nextStep;
+            return signUpResult;
         // errors bubble up for frontend to handle
         } catch(error){
             throw error;
@@ -59,12 +63,11 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
     const userSignIn = async (email: string, password: string) => {
         // error is caught by the login component
         setIsLoading(true);
-        try{            
-                const { nextStep } = await signIn({username: email, password: password})
+        try{    
+                await signIn({username: email, password: password})
                 const user = await getCurrentUser();
                 const name = (await fetchUserAttributes()).name;
                 setCurrentUser({...user, name});
-                return nextStep;
             } 
         finally{
             setIsLoading(false);

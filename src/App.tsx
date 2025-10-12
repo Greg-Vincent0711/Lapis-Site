@@ -17,7 +17,7 @@ const App: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
   const toggleModal = () => setShowLogin(!showLogin);
   const { currentUser, userSignOut } = useAuth();
-
+  console.log(currentUser)
   const handleClick = () => {
     if(currentUser == null){
       toggleModal();
