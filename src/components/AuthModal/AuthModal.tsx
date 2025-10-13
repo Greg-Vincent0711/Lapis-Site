@@ -1,5 +1,4 @@
 import { confirmSignUp } from "@aws-amplify/auth";
-import "../../App.css";
 import useAuth from "../../context/useAuth";
 import "./AuthModal.css";
 import type { FormEvent } from "react";

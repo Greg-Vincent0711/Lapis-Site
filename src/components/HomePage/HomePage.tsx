@@ -4,8 +4,10 @@ import Logo from '../Logo/Logo';
 import Explanation from '../Explanation/Explanation';
 import ArchitectureDiagram from '../Architecture/ArchitectureDiagram/ArchitectureDiagram';
 import AuthModal from '../AuthModal/AuthModal';
-import "./HomePage.css"
 import useAuth from '../../context/useAuth';
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
+import "./HomePage.css"
+
 
 
 /**
@@ -38,8 +40,8 @@ const HomePage: React.FC = () => {
             <li><a href="#logo">Lapis.bot</a></li>
             <li><a href="#ex">What can Lapis do?</a></li>
             <li><a href="#design">System Architecture</a></li>
-            {/** Add the link feature for this */}
-            {currentUser !== null && <li><a> Saved Locations </a></li>}
+            {/** ProtectedRoute checks currentUser */}
+            {currentUser && <li><Link to="/dashboard"> Saved Locations </Link></li>}
           </ul>
         </section>
         <section className="login_bar">
