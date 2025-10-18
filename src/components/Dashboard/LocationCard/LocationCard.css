@@ -1,0 +1,94 @@
+.location-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    transition: box-shadow 0.3s ease;
+    min-width: fit-content;
+    min-height: fit-content;
+  }
+
+.location-card:hover {
+  /*top right bottom left*/
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.6);
+}
+
+.location-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.location-card-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.location-card-type-badge {
+  padding: 6px 12px;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.location-card-coordinates {
+  margin-bottom: 16px;
+}
+
+.location-card-coord-text {
+  color: #4b5563;
+  font-family: monospace;
+  font-size: 18px;
+  margin: 0;
+}
+
+.location-card-button-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.location-card-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.location-card-button:hover {
+  opacity: 0.8;
+}
+
+.location-card-button span {
+  margin-left: 4px;
+}
+
+.location-card-button-copy {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.location-card-button-edit {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.location-card-button-delete {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.location-card-button-nether {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}

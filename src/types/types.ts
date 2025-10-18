@@ -50,3 +50,21 @@ export type AuthContextType = {
     // gets info from getCurrentUser
     userSignOut: () => Promise<void>;    
   }
+
+export type Location = {
+    id: string;
+    name: string;
+    type: string;
+    x: number;
+    y: number;
+    z: number;
+  }
+
+
+export type LocationCardProps = {
+    name: string;
+    type: string;
+    x: number;
+    y: number;
+    z: number;
+}

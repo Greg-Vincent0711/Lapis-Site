@@ -84,6 +84,7 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
               toggle();
             }
           } catch (error) {
+            console.log(error)
             setError("There was an error during signup.");
           }
         } else {
@@ -117,7 +118,6 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
         <form className="modal_form" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
           
           {confirmEmail ? (
-            // Confirmation code view
             <>
               <h2 className="modal_title">Confirm Your Email</h2>
               <p style={{ color: 'rgba(255, 255, 255, 0.9)', textAlign: 'center' }}>

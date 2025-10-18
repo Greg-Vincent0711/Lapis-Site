@@ -5,14 +5,13 @@ import Explanation from '../Explanation/Explanation';
 import ArchitectureDiagram from '../Architecture/ArchitectureDiagram/ArchitectureDiagram';
 import AuthModal from '../AuthModal/AuthModal';
 import useAuth from '../../context/useAuth';
-import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import "./HomePage.css"
 
 
 
 /**
  * TODO
- * - Protected route to show users locations they saved
+ * - Setup Dashboard page
  * - Responsive design setup 
  * - Accessibility stuff
  * - Adding some other advanced feature(i11n maybe)
@@ -21,7 +20,6 @@ const HomePage: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
   const toggleModal = () => setShowLogin(!showLogin);
   const { currentUser, userSignOut } = useAuth();
-  console.log(currentUser)
   const handleClick = () => {
     if(currentUser == null){
       toggleModal();
