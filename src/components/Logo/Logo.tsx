@@ -6,7 +6,7 @@ export default function Logo({id}: {id: string}){
             <div className="img_container">
                 <img src="lapis_lazuli.png"/>
             </div>
-            <h2 className="subtitle">A Minecraft bot.</h2>
+            <h2 className="subtitle">A Minecraft service.</h2>
         </section>
     )
 }

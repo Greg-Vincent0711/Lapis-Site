@@ -51,6 +51,7 @@ export type AuthContextType = {
     userSignOut: () => Promise<void>;    
   }
 
+// shape of data retrieved from api request
 export type Location = {
     id: string;
     name: string;
@@ -61,10 +62,13 @@ export type Location = {
   }
 
 
+  // shape of react component
 export type LocationCardProps = {
     name: string;
     type: string;
     x: number;
     y: number;
     z: number;
+    handleEdit: () => void;
+    handleDelete: () => void;
 }

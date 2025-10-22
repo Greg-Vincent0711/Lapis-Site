@@ -1,6 +1,6 @@
 .dashboard-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #6366f1 0%, #9333ea 100%);
+    background: #5252ff;
     padding: 32px;
   }
 
@@ -15,6 +15,33 @@
   color: white;
   margin-bottom: 32px;
   margin-top: 0;
+}
+
+.dashboard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding-bottom: 2rem;
+}
+
+.oauth_button {
+  background: #5252ff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid white;
+  border-radius: 30px;
+  font-size: 1.3rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: 300px;
+  height: 65px;
+}
+
+.oauth_button:hover {
+  background: #4a4affBF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
 .dashboard-loading-text {

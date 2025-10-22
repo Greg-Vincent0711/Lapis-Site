@@ -61,6 +61,7 @@
   border: none;
   border-radius: 6px;
   font-size: 14px;
+  flex: 0 0 auto; 
   cursor: pointer;
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
@@ -74,6 +75,7 @@
 }
 
 .location-card-button-copy {
+  min-width: 61px;
   background-color: #f3f4f6;
   color: #374151;
 }
@@ -89,6 +91,9 @@
 }
 
 .location-card-button-nether {
+  /* min-width: 40px !important; */
   background-color: #f3e8ff;
   color: #6b21a8;
+  min-width: 120px;
+  justify-content: center;
 }

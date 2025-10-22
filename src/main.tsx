@@ -23,7 +23,6 @@ const router = createBrowserRouter([
     </ProtectedRoute>
   }
 ]);
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
       <AuthProvider>

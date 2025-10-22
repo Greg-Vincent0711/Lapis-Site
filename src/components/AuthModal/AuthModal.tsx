@@ -93,6 +93,7 @@ export default function Login( {showLogin, toggle}: {showLogin: boolean, toggle:
       } else {
         try {
           await userSignIn(modalData.email, modalData.password);
+          /** Check if the user is connected to discord */
           toggle();
         } catch (error) {
           setError("There was an error during signin.");

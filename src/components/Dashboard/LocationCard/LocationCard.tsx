@@ -1,8 +1,10 @@
 /**
  * TODO
- * - implement copy, edit, delete
+ * - visual cue when copy button are pressed
+ * - implement necessary forms/inputs for editing, probably a modal component
+ * - add API endpoint to gw, set that up so that editing/deleting fields work, etc
  */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import type { LocationCardProps } from '../../../types/types';
 import './LocationCard.css';
 
@@ -12,29 +14,25 @@ const LocationCard: React.FC<LocationCardProps> = ({
   x,
   y,
   z,
+  handleDelete,
+  handleEdit
 }) => {
-  const [nether, setNether] = useState(false);
+  const [isNether, setIsNether] = useState(false);
+  const [didCopy, setDidCopy] = useState(false);
 
   const onCopy = () => {
-    // const coordText = `${location.name}: X: ${location.x}, Y: ${location.y}, Z: ${location.z}`;
-    // navigator.clipboard.writeText(coordText);
+    setDidCopy(true)
+    navigator.clipboard.writeText(`${name}: X: ${x}, Y: ${y}, Z: ${z}`);
   };
+  const netherHoverText = `Convert coordinates\nbetween Nether and Overworld`
 
-  const handleEdit = () => {
-    console.log('Edit location:', location);
-    // Implement edit functionality
-  };
+  const toggleNether = () => setIsNether(!isNether);
 
-  const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this location?')) {
-      
-      // Also send delete request to backend
-      // await fetch(`/api/locations/${locationId}`, { method: 'DELETE' });
-    }
-  };
-
-  const toggleNether = () => setNether(!nether);
-
+  useEffect(() => {
+    setTimeout(() => {
+      setDidCopy(false)
+    }, 2000)
+  }, [didCopy])
 
   return (
     <main className="location-card">
@@ -45,13 +43,13 @@ const LocationCard: React.FC<LocationCardProps> = ({
       
       <div className="location-card-coordinates">
         <p className="location-card-coord-text">
-          X: {nether ? Math.trunc(x / 8) : x} Y: {nether ? Math.trunc(y / 8) : y} Z: {nether ? Math.trunc(z / 8) : z}
+          X: {isNether ? Math.trunc(x / 8) : x} Y: {isNether ? Math.trunc(y / 8) : y} Z: {isNether ? Math.trunc(z / 8) : z}
         </p>
       </div>
       
       <div className="location-card-button-container">
         <button onClick={onCopy} className="location-card-button location-card-button-copy">
-          <span>Copy</span>
+          <span>{ didCopy ?  "✔" : "Copy"}</span>
         </button>
         
         <button onClick={handleEdit} className="location-card-button location-card-button-edit">
@@ -62,8 +60,8 @@ const LocationCard: React.FC<LocationCardProps> = ({
           <span>Delete</span>
         </button>
         
-        <button onClick={toggleNether} className="location-card-button location-card-button-nether">
-          <span>To Nether</span>
+        <button onClick={toggleNether} title={netherHoverText} className="location-card-button location-card-button-nether">
+          <span>{isNether ? "To Overworld": "To Nether"}</span>
         </button>
       </div>
     </main>
