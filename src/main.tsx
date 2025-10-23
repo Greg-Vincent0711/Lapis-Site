@@ -7,6 +7,7 @@ import AuthProvider from './context/AuthProvider.tsx';
 import { createBrowserRouter, RouterProvider} from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.tsx';
 import Dashboard from './components/Dashboard/Dashboard.tsx';
+import CallbackPage from './components/CallbackPage/CallbackPage.tsx';
 configureAmplify();
 
 const router = createBrowserRouter([
@@ -21,7 +22,12 @@ const router = createBrowserRouter([
     element: <ProtectedRoute>
       <Dashboard/>
     </ProtectedRoute>
+  },
+  {
+    path: "/auth/callback",
+    element: <CallbackPage/>
   }
+
 ]);
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
