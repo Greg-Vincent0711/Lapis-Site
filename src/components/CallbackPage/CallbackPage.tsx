@@ -3,28 +3,45 @@
  * - make the animations, error states, loading states look better
  */
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import "./CallbackPage.css"
 
 export const CallbackPage = () => {
     const [status, setStatus] = useState("loading")
     const [searchParams, _] = useSearchParams();
-    // on load, grab the code from the URL
-    // send code to the backend
-    // wait for response
-    // if true, redirect to dashboard
-    // if false, show error
+    const navigate = useNavigate();
+    const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
+
     useEffect(() => {
-        async () => {
+        // send code to the backend, retrieve back accessToken
+        (async () => {
             const authCode = searchParams.get("code");
-            // switch to the API
-            fetch('http://localhost:5000/api/auth/discord/callback', {
+            // switch to the API after updating the backend code
+            fetch(`${API_ENDPOINT}/auth/callback`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include', // Important - this allows cookies
+                credentials: 'include',
                 body: JSON.stringify({ authCode })
+            }).then((res) => {
+                if(res.ok){
+                    return res.json()
+                }
+            }).then((responseData) => {
+                // recieve accessTokenback
+                // store in local storage
+                // const accessToken = responseData.accessToken
+                setStatus("success")
+                setTimeout(() => {
+                    navigate("/dashboard")
+                }, 500)
+            }).catch((_error) => {
+                // make this better
+                setStatus("error")
+                setTimeout(() => {
+                    navigate("/")
+                }, 500)
             })
-        }
+        })();
     }, [])
 
 

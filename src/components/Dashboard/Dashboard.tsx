@@ -13,13 +13,14 @@
  * Add a + button at the bottom to trigger a modal to add a location
  * Add some type user acknowledgement at the top that mentions their name
  * Image support through s3
+ * Dashboard needs to query by email or author_ID once theyre linked
  */
 import React, { useState, useEffect } from 'react';
 import type { Location } from '../../types/types';
 import buildDiscordAuthUrl from '../../utils/OAuth';
 import LocationCard from "./LocationCard/LocationCard";
 import "./Dashboard.css";
-const API_ENDPOINT = import.meta.env.REACT_APP_API_ENDPOINT;
+// const API_ENDPOINT = import.meta.env.REACT_APP_API_ENDPOINT;
 
 
 export const CLIENT_ID = import.meta.env.REACT_APP_DISCORD_CLIENT_ID!;
