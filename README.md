@@ -1,69 +1,70 @@
-# React + TypeScript + Vite
+# Lapis.bot Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web application for managing Minecraft location coordinates saved through the Lapis Discord bot. This site provides a user-friendly interface to view, add, edit, and delete saved locations, complementing the Discord bot's command-based interface.
 
-Currently, two official plugins are available:
+## Phase
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Project is currently in Phase 1 of development - setting up the basic features
+listed below. 
 
-## Expanding the ESLint configuration
+## Purpose
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Lapis.bot was created to solve a common problem for Minecraft players: keeping track of important locations in their worlds. Instead of scrolling through screenshots or manually writing down coordinates, players can use the Discord bot to save locations and then access them through this web interface.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The website serves as a dashboard where authenticated users can:
+- View all their saved Minecraft locations
+- Add new locations with coordinates (X, Y, Z)
+- Edit existing location details
+- Upload images associated with locations
+- Connect their Discord account to sync locations saved through the bot
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Frontend
+- **React 19** - Modern React with the latest features
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
+- **React Router DOM** - Client-side routing
+- **AWS Amplify** - Authentication via AWS Cognito
+- **Reagraph** - Interactive graph visualization for system architecture
+- **React Three Fiber (drei)** - 3D graphics and visualizations
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Backend Infrastructure (AWS)
+- **EC2** - Hosts the Discord bot and handles user interactions
+- **API Gateway** - RESTful API endpoints for the website and bot
+- **Lambda** - Serverless functions for CRUD operations and seed processing
+- **DynamoDB** - NoSQL database storing location data and user information
+- **S3** - Object storage for location images
+- **AWS Secrets Manager** - Secure credential management
+- **AWS Cognito** - User authentication and authorization
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Additional Integrations
+- **Discord OAuth** - Connect Discord accounts to sync bot-saved locations
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Features
+
+### Authentication
+- User sign-up and sign-in via AWS Cognito
+- Protected routes for authenticated users
+- Session management and sign-out functionality
+
+### Dashboard
+- View up to 10 saved locations per user
+- Location cards displaying:
+  - Name and type (Overworld, Nether, Stronghold, etc.)
+  - Coordinates (X, Y, Z)
+  - Associated images
+- Add new locations via modal form
+- Edit location details inline
+- Delete locations
+- Upload images for locations
+
+### Discord Integration
+- OAuth flow to connect Discord accounts
+- Sync locations saved through Discord bot commands
+- Unified experience across Discord and web interface
+
+### Documentation
+- Interactive command reference showcasing all Discord bot commands
+- System architecture diagram visualizing AWS infrastructure
+- Responsive design for desktop and mobile viewing

@@ -16,10 +16,13 @@
  * Dashboard needs to query by email or author_ID once theyre linked
  */
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Location } from '../../types/types';
 import buildDiscordAuthUrl from '../../utils/OAuth';
 import LocationCard from "./LocationCard/LocationCard";
 import "./Dashboard.css";
+import AddLocationModal from './AddLocationModal/AddLocationModal';
+import type { NewLocationPayload } from './AddLocationModal/AddLocationModal';
 // const API_ENDPOINT = import.meta.env.REACT_APP_API_ENDPOINT;
 
 
@@ -31,20 +34,8 @@ console.log(REDIRECT_URI);
 
 const SavedLocationsDashboard: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const handleEdit = () => {
-    // change fields to inputs
-    // set changes on enter?
-    // optimistically update the UI, send req to db
-
-
-  };
-  const handleDelete = () => {      
-      // update the UI to get rid of the clicked location card
-      // send a delete request to the backend
-  };
-
+  const [showAddLocation, setShowAddLocation] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -67,10 +58,8 @@ const SavedLocationsDashboard: React.FC = () => {
         ];
         
         setLocations(mockData);
-        setLoading(false);
       } catch (error) {
         console.error('Failed to fetch locations:', error);
-        setLoading(false);
       }
     };
 
@@ -81,17 +70,48 @@ const SavedLocationsDashboard: React.FC = () => {
     buildDiscordAuthUrl();
   }
 
+  const toggleAddLocation = () => setShowAddLocation((prev) => !prev);
+
+  const handleAddLocation = (payload: NewLocationPayload) => {
+    const newLocation: Location = {
+      id: Date.now().toString(),
+      ...payload
+    };
+    setLocations((prev) => [...prev, newLocation]);
+  };
+
+  const handleImageUpload = (id: string, file: File) => {
+    const objectUrl = URL.createObjectURL(file);
+    setLocations((prev) => prev.map((loc) => (loc.id === id ? { ...loc, imageUrl: objectUrl } : loc)));
+  };
+
+  const handleDelete = (id: string) => {
+    setLocations((prev) => prev.filter((loc) => loc.id !== id));
+  };
+
+  const handleEdit = (id: string, updates: Pick<Location, 'name' | 'type' | 'x' | 'y' | 'z'>) => {
+    setLocations((prev) => prev.map((loc) => (loc.id === id ? { ...loc, ...updates } : loc)));
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-content">
         <nav className="dashboard-nav">
           <h1 className="dashboard-title">Saved Locations</h1>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button 
+              className="back_button" 
+              onClick={() => navigate('/')}
+              title="Back to home">
+              ← Back
+            </button>
           <button 
             className="oauth_button" 
             onClick={testFn}
             title="Connect to your locations saved in Discord."> 
             Connect to Discord
           </button>
+          </div>
         </nav>
         
         {locations.length === 0 ? (
@@ -103,17 +123,35 @@ const SavedLocationsDashboard: React.FC = () => {
             {locations.map((location) => (
               <LocationCard
                 key={location.id}
+                id={location.id}
                 name={location.name}
                 type={location.type}
                 x={location.x}
                 y={location.y}
                 z={location.z}
-                handleDelete={handleDelete}
-                handleEdit={handleEdit}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+                imageUrl={location.imageUrl}
+                onImageUpload={handleImageUpload}
               />
             ))}
           </main>
         )}
+
+        <button
+          className="add_location_button"
+          onClick={toggleAddLocation}
+          title="Add a new location"
+          disabled={locations.length >= 10}
+        >
+          + Add Location
+        </button>
+
+        <AddLocationModal
+          show={showAddLocation}
+          toggle={toggleAddLocation}
+          onSubmit={handleAddLocation}
+        />
       </div>
     </div>
   );

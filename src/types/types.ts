@@ -59,16 +59,20 @@ export type Location = {
     x: number;
     y: number;
     z: number;
+    imageUrl?: string;
   }
 
 
   // shape of react component
 export type LocationCardProps = {
+    id: string;
     name: string;
     type: string;
     x: number;
     y: number;
     z: number;
-    handleEdit: () => void;
-    handleDelete: () => void;
+    onEdit: (id: string, updates: Pick<Location, 'name' | 'type' | 'x' | 'y' | 'z'>) => void;
+    onDelete: (id: string) => void;
+    imageUrl?: string;
+    onImageUpload: (id: string, file: File) => void;
 }

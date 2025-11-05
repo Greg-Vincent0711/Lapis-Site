@@ -4,13 +4,14 @@
  */
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import "./CallbackPage.css"
+import "./CallbackPage.css";
 
 export const CallbackPage = () => {
     const [status, setStatus] = useState("loading")
     const [searchParams, _] = useSearchParams();
     const navigate = useNavigate();
     const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
+    console.log("API ENDPOINT: ", API_ENDPOINT)
 
     useEffect(() => {
         // send code to the backend, retrieve back accessToken
@@ -25,11 +26,15 @@ export const CallbackPage = () => {
             }).then((res) => {
                 if(res.ok){
                     return res.json()
+                } else {
+                    console.log('Response not ok!');
+                    throw new Error('Request failed');
                 }
             }).then((responseData) => {
                 // recieve accessTokenback
                 // store in local storage
                 // const accessToken = responseData.accessToken
+                console.log(responseData)
                 setStatus("success")
                 setTimeout(() => {
                     navigate("/dashboard")

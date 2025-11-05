@@ -6,6 +6,7 @@
     transition: box-shadow 0.3s ease;
     min-width: fit-content;
     min-height: fit-content;
+    width: 320px;
   }
 
 .location-card:hover {
@@ -18,6 +19,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  min-height: 32px; /* reserve space so inputs don't shift height */
 }
 
 .location-card-name {
@@ -25,6 +27,13 @@
   font-weight: 600;
   color: #1f2937;
   margin: 0;
+}
+
+.location-card-name--image {
+  color: #1e40af;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
 .location-card-type-badge {
@@ -38,6 +47,7 @@
 
 .location-card-coordinates {
   margin-bottom: 16px;
+  min-height: 24px; /* keep height consistent between text and inputs */
 }
 
 .location-card-coord-text {
@@ -45,6 +55,32 @@
   font-family: monospace;
   font-size: 18px;
   margin: 0;
+  line-height: 24px;
+}
+
+.location-card-coord-edit {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 24px;
+}
+
+.location-card-input {
+  padding: 0 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: inherit;
+  line-height: 24px;
+  height: 24px;
+  box-sizing: border-box;
+}
+
+.location-card-input-type {
+  min-width: 120px;
+  font-size: 14px;
+  height: 28px; /* match type badge visual size */
+  line-height: 28px;
+  padding: 0 12px;
 }
 
 .location-card-button-container {
@@ -96,4 +132,9 @@
   color: #6b21a8;
   min-width: 120px;
   justify-content: center;
+}
+
+.location-card-button-upload {
+  background-color: #f9fafb;
+  color: #6b7280;
 }

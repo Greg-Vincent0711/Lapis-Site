@@ -4,21 +4,32 @@
  * - implement necessary forms/inputs for editing, probably a modal component
  * - add API endpoint to gw, set that up so that editing/deleting fields work, etc
  */
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import type { LocationCardProps } from '../../../types/types';
 import './LocationCard.css';
 
 const LocationCard: React.FC<LocationCardProps> = ({
+  id,
   name,
   type,
   x,
   y,
   z,
-  handleDelete,
-  handleEdit
+  onDelete,
+  onEdit,
+  imageUrl,
+  onImageUpload
 }) => {
   const [isNether, setIsNether] = useState(false);
   const [didCopy, setDidCopy] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValues, setEditValues] = useState({ name, type, x, y, z });
+
+  useEffect(() => {
+    // keep local edit values in sync when props change externally
+    setEditValues({ name, type, x, y, z });
+  }, [name, type, x, y, z]);
 
   const onCopy = () => {
     setDidCopy(true)
@@ -37,14 +48,63 @@ const LocationCard: React.FC<LocationCardProps> = ({
   return (
     <main className="location-card">
       <div className="location-card-header">
-        <h3 className="location-card-name">{name}</h3>
-        <span className="location-card-type-badge">{type}</span>
+        <h3
+          className={`location-card-name ${imageUrl ? 'location-card-name--image' : ''}`}
+          onClick={() => {
+            if (imageUrl) {
+              window.open(imageUrl, '_blank');
+            }
+          }}
+          title={imageUrl ? 'Open image in new tab' : undefined}
+        >
+          {isEditing ? (
+            <input
+              className="location-card-input"
+              value={editValues.name}
+              onChange={(e) => setEditValues((prev) => ({ ...prev, name: e.target.value }))}
+            />
+          ) : (
+            name
+          )}
+        </h3>
+        {isEditing ? (
+          <input
+            className="location-card-input location-card-input-type"
+            value={editValues.type}
+            onChange={(e) => setEditValues((prev) => ({ ...prev, type: e.target.value }))}
+          />
+        ) : (
+          <span className="location-card-type-badge">{type}</span>
+        )}
       </div>
       
       <div className="location-card-coordinates">
-        <p className="location-card-coord-text">
-          X: {isNether ? Math.trunc(x / 8) : x} Y: {isNether ? Math.trunc(y / 8) : y} Z: {isNether ? Math.trunc(z / 8) : z}
-        </p>
+        {isEditing ? (
+          <div className="location-card-coord-edit">
+            <input
+              className="location-card-input"
+              value={String(editValues.x)}
+              inputMode="numeric"
+              onChange={(e) => setEditValues((prev) => ({ ...prev, x: Number(e.target.value) || 0 }))}
+            />
+            <input
+              className="location-card-input"
+              value={String(editValues.y)}
+              inputMode="numeric"
+              onChange={(e) => setEditValues((prev) => ({ ...prev, y: Number(e.target.value) || 0 }))}
+            />
+            <input
+              className="location-card-input"
+              value={String(editValues.z)}
+              inputMode="numeric"
+              onChange={(e) => setEditValues((prev) => ({ ...prev, z: Number(e.target.value) || 0 }))}
+            />
+          </div>
+        ) : (
+          <p className="location-card-coord-text">
+            X: {isNether ? Math.trunc(x / 8) : x} Y: {isNether ? Math.trunc(y / 8) : y} Z: {isNether ? Math.trunc(z / 8) : z}
+          </p>
+        )}
       </div>
       
       <div className="location-card-button-container">
@@ -52,16 +112,57 @@ const LocationCard: React.FC<LocationCardProps> = ({
           <span>{ didCopy ?  "✔" : "Copy"}</span>
         </button>
         
-        <button onClick={handleEdit} className="location-card-button location-card-button-edit">
-          <span>Edit</span>
-        </button>
+        {isEditing ? (
+          <button
+            onClick={() => {
+              onEdit(id, {
+                name: editValues.name,
+                type: editValues.type,
+                x: editValues.x,
+                y: editValues.y,
+                z: editValues.z,
+              });
+              setIsEditing(false);
+            }}
+            className="location-card-button location-card-button-edit"
+          >
+            <span>Confirm</span>
+          </button>
+        ) : (
+          <button onClick={() => setIsEditing(true)} className="location-card-button location-card-button-edit">
+            <span>Edit</span>
+          </button>
+        )}
         
-        <button onClick={handleDelete} className="location-card-button location-card-button-delete">
+        <button onClick={() => onDelete(id)} className="location-card-button location-card-button-delete">
           <span>Delete</span>
         </button>
         
         <button onClick={toggleNether} title={netherHoverText} className="location-card-button location-card-button-nether">
           <span>{isNether ? "To Overworld": "To Nether"}</span>
+        </button>
+
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const file = e.target.files && e.target.files[0];
+            if (file) {
+              onImageUpload(id, file);
+              // clear value to allow re-uploading the same file
+              e.currentTarget.value = '';
+            }
+          }}
+        />
+
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="location-card-button location-card-button-upload"
+          title="Upload an image for this location"
+        >
+          <span>Upload image</span>
         </button>
       </div>
     </main>
