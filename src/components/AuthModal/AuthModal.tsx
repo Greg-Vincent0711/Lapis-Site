@@ -1,3 +1,7 @@
+/**
+ * TODO fix bug where confirm email modal shows up after refresh
+ * Add an Email Confirmed message
+ */
 import { confirmSignUp } from "@aws-amplify/auth";
 import useAuth from "../../context/useAuth";
 import "./AuthModal.css";

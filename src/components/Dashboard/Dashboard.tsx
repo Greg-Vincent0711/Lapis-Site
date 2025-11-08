@@ -23,30 +23,33 @@ import LocationCard from "./LocationCard/LocationCard";
 import "./Dashboard.css";
 import AddLocationModal from './AddLocationModal/AddLocationModal';
 import type { NewLocationPayload } from './AddLocationModal/AddLocationModal';
-// const API_ENDPOINT = import.meta.env.REACT_APP_API_ENDPOINT;
 
-
+const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
 export const CLIENT_ID = import.meta.env.REACT_APP_DISCORD_CLIENT_ID!;
-// brings users BACK to my application
 export const REDIRECT_URI = import.meta.env.REACT_APP_DISCORD_REDIRECT_URI!;
-console.log(CLIENT_ID);
-console.log(REDIRECT_URI);
 
 const SavedLocationsDashboard: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
-
-  }, [])
-
-  useEffect(() => {
-    const fetchLocations = async () => {
+    (async () => {
       try {
-        // await fetch(API_ENDPOINT).then((res) => {
-        //   console.log(res)
-        // })
+        /**
+         * properly check we have an author_ID to get. If not, we need to throw an error
+         * users must authenticate with discord before using the app
+         * 
+         */
+        const author_ID = localStorage.getItem("author_ID");
+
+        await fetch(`${API_ENDPOINT}/locations`).then((res) => {
+          console.log(res)
+          if(res.ok){
+            return res.json();
+          } else {
+            throw new Error('Failed to fetch locations');
+          }
+        })
         
         const mockData: Location[] = [
           { id: '1', name: 'Spawn Point', type: 'Overworld', x: 100, y: 64, z: -200 },
@@ -61,9 +64,7 @@ const SavedLocationsDashboard: React.FC = () => {
       } catch (error) {
         console.error('Failed to fetch locations:', error);
       }
-    };
-
-    fetchLocations();
+    })();
   }, []);
 
   const testFn = () => {
