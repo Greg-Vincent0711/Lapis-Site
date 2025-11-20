@@ -45,6 +45,7 @@ export type AuthContextType = {
     // user information that other components need
     // currentUser infers isSignedIn too
     currentUser: User | null;
+    authToken: string | undefined;
     userSignUp: (name: string, email: string, password: string) => Promise<SignUpOutput>;
     userSignIn: (email: string, password: string) => Promise<void>;
     // gets info from getCurrentUser

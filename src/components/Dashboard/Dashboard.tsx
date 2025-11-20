@@ -6,8 +6,6 @@
  * disable + button if more than 10 locations are used
  * map them to a state array, populate a list of cards 
  * figure out the shape of the data from the API request
- * add a button to go back to the regular page
- * edit the way the "No Locations Yet" portion looks
  * When you refresh but are authenticated, it shouldn't take
  * you back to the homescreen
  * Add some type user acknowledgement at the top that mentions their name
@@ -15,13 +13,13 @@
  * Dashboard needs to query by email or author_ID once theyre linked
  */
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import type { Location } from '../../types/types';
 import buildDiscordAuthUrl from '../../utils/OAuth';
 import LocationCard from "./LocationCard/LocationCard";
-import "./Dashboard.css";
 import AddLocationModal from './AddLocationModal/AddLocationModal';
 import type { NewLocationPayload } from '../../types/types';
+import "./Dashboard.css";
 
 const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
 export const CLIENT_ID = import.meta.env.REACT_APP_DISCORD_CLIENT_ID!;
@@ -30,7 +28,7 @@ export const REDIRECT_URI = import.meta.env.REACT_APP_DISCORD_REDIRECT_URI!;
 const SavedLocationsDashboard: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       try {
@@ -50,16 +48,16 @@ const SavedLocationsDashboard: React.FC = () => {
           }
         })
         
-        const mockData: Location[] = [
-          { id: '1', name: 'Spawn Point', type: 'Overworld', xCoord: 100, yCoord: 64, zCoord: -200 },
-          { id: '2', name: 'Village', type: 'Overworld', xCoord: 450, yCoord: 72, zCoord: 320 },
-          { id: '3', name: 'Nether Portal', type: 'Nether', xCoord: 56, yCoord: 70, zCoord: -25 },
-          { id: '4', name: 'End Portal', type: 'Stronghold', xCoord: -890, yCoord: 42, zCoord: 1200 },
-          { id: '5', name: 'Base', type: 'Overworld', xCoord: 1200, yCoord: 65, zCoord: -450 },
-          { id: '6', name: 'Mine', type: 'Underground', xCoord: 100, yCoord: -32, zCoord: -200 },
-        ];
+        // const mockData: Location[] = [
+        //   { id: '1', name: 'Spawn Point', type: 'Overworld', xCoord: 100, yCoord: 64, zCoord: -200 },
+        //   { id: '2', name: 'Village', type: 'Overworld', xCoord: 450, yCoord: 72, zCoord: 320 },
+        //   { id: '3', name: 'Nether Portal', type: 'Nether', xCoord: 56, yCoord: 70, zCoord: -25 },
+        //   { id: '4', name: 'End Portal', type: 'Stronghold', xCoord: -890, yCoord: 42, zCoord: 1200 },
+        //   { id: '5', name: 'Base', type: 'Overworld', xCoord: 1200, yCoord: 65, zCoord: -450 },
+        //   { id: '6', name: 'Mine', type: 'Underground', xCoord: 100, yCoord: -32, zCoord: -200 },
+        // ];
         
-        setLocations(mockData);
+        // setLocations(mockData);
       } catch (error) {
         console.error('Failed to fetch locations:', error);
       }

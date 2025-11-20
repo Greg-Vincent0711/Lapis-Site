@@ -5,11 +5,12 @@
 import React, { useState, useEffect } from "react";
 // import AuthContext from "./authContext";
 import type { AuthContextType, User } from "../types/types";
-import { getCurrentUser, signIn, signOut, signUp, fetchAuthSession, fetchUserAttributes, type SignInOutput } from "@aws-amplify/auth";
+import { getCurrentUser, signIn, signOut, signUp, fetchAuthSession, fetchUserAttributes } from "@aws-amplify/auth";
 import AuthContext from "./authContext";
 export default function AuthProvider({ children } : {children: React.ReactNode}){
     const [isLoading, setIsLoading] = useState(false);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [authToken, setAuthToken] = useState<string | undefined>("")
 
     // we need a useEffect to look for the current user on app load
     useEffect(() => {
@@ -20,6 +21,7 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
                     const user = await getCurrentUser();
                     const name = (await fetchUserAttributes()).name;
                     setCurrentUser({...user, name});
+                    setAuthToken(tokens.idToken?.toString())
                 }
             } catch(error){
                 // nothing catches this error, maybe show a toast in the future
@@ -86,11 +88,12 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
     const value: AuthContextType = {
         isLoading,
         currentUser,
+        authToken,
         userSignUp,
         userSignIn,
         userSignOut
     }
-
+    
     return(
         // provider is a property on context object
         <AuthContext.Provider value={value}>
