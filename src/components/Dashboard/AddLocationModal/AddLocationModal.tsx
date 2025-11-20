@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import '../../AuthModal/AuthModal.css';
-
-export type NewLocationPayload = {
-  name: string;
-  type: string;
-  x: number;
-  y: number;
-  z: number;
-};
-
-type AddLocationModalProps = {
-  show: boolean;
-  toggle: () => void;
-  onSubmit: (payload: NewLocationPayload) => void;
-};
+import type { AddLocationModalProps, NewLocationPayload } from '../../../types/types';
 
 const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSubmit }) => {
   const [error, setError] = useState('');
-  const [form, setForm] = useState<NewLocationPayload>({ name: '', type: '', x: 0, y: 64, z: 0 });
+  const [form, setForm] = useState<NewLocationPayload>({ name: '', type: '', xCoord: 0, yCoord: 64, zCoord: 0 });
 
   useEffect(() => {
     if (error) {
@@ -28,7 +15,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
   }, [error]);
 
   const update = (field: keyof NewLocationPayload, value: string) => {
-    if (field === 'x' || field === 'y' || field === 'z') {
+    if (field === 'xCoord' || field === 'yCoord' || field === 'zCoord') {
       const num = Number(value);
       setForm((prev) => ({ ...prev, [field]: Number.isNaN(num) ? 0 : num }));
     } else {
@@ -39,7 +26,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
   const validate = () => {
     if (!form.name.trim()) return 'Name is required.';
     if (!form.type.trim()) return 'Type is required.';
-    if (!Number.isFinite(form.x) || !Number.isFinite(form.y) || !Number.isFinite(form.z)) return 'Coordinates must be numbers.';
+    if (!Number.isFinite(form.xCoord) || !Number.isFinite(form.yCoord) || !Number.isFinite(form.zCoord)) return 'Coordinates must be numbers.';
     return '';
   };
 
@@ -53,7 +40,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
     onSubmit(form);
     toggle();
     // reset for next open
-    setForm({ name: '', type: '', x: 0, y: 64, z: 0 });
+    setForm({ name: '', type: '', xCoord: 0, yCoord: 64, zCoord: 0 });
   };
 
   return (
@@ -79,24 +66,24 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
           <input
             placeholder="X"
             inputMode="numeric"
-            value={String(form.x)}
-            onChange={(e) => update('x', e.target.value)}
+            value={String(form.xCoord)}
+            onChange={(e) => update('xCoord', e.target.value)}
             required
           />
 
           <input
             placeholder="Y"
             inputMode="numeric"
-            value={String(form.y)}
-            onChange={(e) => update('y', e.target.value)}
+            value={String(form.yCoord)}
+            onChange={(e) => update('yCoord', e.target.value)}
             required
           />
 
           <input
             placeholder="Z"
             inputMode="numeric"
-            value={String(form.z)}
-            onChange={(e) => update('z', e.target.value)}
+            value={String(form.zCoord)}
+            onChange={(e) => update('zCoord', e.target.value)}
             required
           />
 

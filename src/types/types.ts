@@ -56,9 +56,9 @@ export type Location = {
     id: string;
     name: string;
     type: string;
-    x: number;
-    y: number;
-    z: number;
+    xCoord: number;
+    yCoord: number;
+    zCoord: number;
     imageUrl?: string;
   }
 
@@ -68,11 +68,26 @@ export type LocationCardProps = {
     id: string;
     name: string;
     type: string;
-    x: number;
-    y: number;
-    z: number;
-    onEdit: (id: string, updates: Pick<Location, 'name' | 'type' | 'x' | 'y' | 'z'>) => void;
+    xCoord: number;
+    yCoord: number;
+    zCoord: number;
+    onEdit: (id: string, updates: Pick<Location, 'name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => void;
     onDelete: (id: string) => void;
     imageUrl?: string;
     onImageUpload: (id: string, file: File) => void;
 }
+
+export type NewLocationPayload = {
+    name: string;
+    type: string;
+    xCoord: number;
+    yCoord: number;
+    zCoord: number;
+  };
+  
+  export type AddLocationModalProps = {
+    show: boolean;
+    toggle: () => void;
+    onSubmit: (payload: NewLocationPayload) => void;
+  };
+  

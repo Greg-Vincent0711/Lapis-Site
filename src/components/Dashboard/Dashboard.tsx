@@ -22,7 +22,7 @@ import buildDiscordAuthUrl from '../../utils/OAuth';
 import LocationCard from "./LocationCard/LocationCard";
 import "./Dashboard.css";
 import AddLocationModal from './AddLocationModal/AddLocationModal';
-import type { NewLocationPayload } from './AddLocationModal/AddLocationModal';
+import type { NewLocationPayload } from '../../types/types';
 
 const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
 export const CLIENT_ID = import.meta.env.REACT_APP_DISCORD_CLIENT_ID!;
@@ -52,12 +52,12 @@ const SavedLocationsDashboard: React.FC = () => {
         })
         
         const mockData: Location[] = [
-          { id: '1', name: 'Spawn Point', type: 'Overworld', x: 100, y: 64, z: -200 },
-          { id: '2', name: 'Village', type: 'Overworld', x: 450, y: 72, z: 320 },
-          { id: '3', name: 'Nether Portal', type: 'Nether', x: 56, y: 70, z: -25 },
-          { id: '4', name: 'End Portal', type: 'Stronghold', x: -890, y: 42, z: 1200 },
-          { id: '5', name: 'Base', type: 'Overworld', x: 1200, y: 65, z: -450 },
-          { id: '6', name: 'Mine', type: 'Underground', x: 100, y: -32, z: -200 },
+          { id: '1', name: 'Spawn Point', type: 'Overworld', xCoord: 100, yCoord: 64, zCoord: -200 },
+          { id: '2', name: 'Village', type: 'Overworld', xCoord: 450, yCoord: 72, zCoord: 320 },
+          { id: '3', name: 'Nether Portal', type: 'Nether', xCoord: 56, yCoord: 70, zCoord: -25 },
+          { id: '4', name: 'End Portal', type: 'Stronghold', xCoord: -890, yCoord: 42, zCoord: 1200 },
+          { id: '5', name: 'Base', type: 'Overworld', xCoord: 1200, yCoord: 65, zCoord: -450 },
+          { id: '6', name: 'Mine', type: 'Underground', xCoord: 100, yCoord: -32, zCoord: -200 },
         ];
         
         setLocations(mockData);
@@ -90,7 +90,7 @@ const SavedLocationsDashboard: React.FC = () => {
     setLocations((prev) => prev.filter((loc) => loc.id !== id));
   };
 
-  const handleEdit = (id: string, updates: Pick<Location, 'name' | 'type' | 'x' | 'y' | 'z'>) => {
+  const handleEdit = (id: string, updates: Pick<Location, 'name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => {
     setLocations((prev) => prev.map((loc) => (loc.id === id ? { ...loc, ...updates } : loc)));
   };
 
@@ -127,9 +127,9 @@ const SavedLocationsDashboard: React.FC = () => {
                 id={location.id}
                 name={location.name}
                 type={location.type}
-                x={location.x}
-                y={location.y}
-                z={location.z}
+                xCoord={location.xCoord}
+                yCoord={location.yCoord}
+                zCoord={location.zCoord}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
                 imageUrl={location.imageUrl}

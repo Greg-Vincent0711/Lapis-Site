@@ -12,9 +12,9 @@ const LocationCard: React.FC<LocationCardProps> = ({
   id,
   name,
   type,
-  x,
-  y,
-  z,
+  xCoord,
+  yCoord,
+  zCoord,
   onDelete,
   onEdit,
   imageUrl,
@@ -24,18 +24,18 @@ const LocationCard: React.FC<LocationCardProps> = ({
   const [didCopy, setDidCopy] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editValues, setEditValues] = useState({ name, type, x, y, z });
+  const [editValues, setEditValues] = useState({ name, type, xCoord, yCoord, zCoord});
+  const netherHoverText = `Convert coordinates\nbetween Nether and Overworld`
 
   useEffect(() => {
     // keep local edit values in sync when props change externally
-    setEditValues({ name, type, x, y, z });
-  }, [name, type, x, y, z]);
+    setEditValues({ name, type, xCoord, yCoord, zCoord});
+  }, [name, type, xCoord, yCoord, zCoord]);
 
   const onCopy = () => {
     setDidCopy(true)
-    navigator.clipboard.writeText(`${name}: X: ${x}, Y: ${y}, Z: ${z}`);
+    navigator.clipboard.writeText(`${name} - ${xCoord} ${yCoord} ${zCoord}`);
   };
-  const netherHoverText = `Convert coordinates\nbetween Nether and Overworld`
 
   const toggleNether = () => setIsNether(!isNether);
 
@@ -83,26 +83,26 @@ const LocationCard: React.FC<LocationCardProps> = ({
           <div className="location-card-coord-edit">
             <input
               className="location-card-input"
-              value={String(editValues.x)}
+              value={String(editValues.xCoord)}
               inputMode="numeric"
-              onChange={(e) => setEditValues((prev) => ({ ...prev, x: Number(e.target.value) || 0 }))}
+              onChange={(e) => setEditValues((prev) => ({ ...prev, xCoord: Number(e.target.value) || 0 }))}
             />
             <input
               className="location-card-input"
-              value={String(editValues.y)}
+              value={String(editValues.yCoord)}
               inputMode="numeric"
-              onChange={(e) => setEditValues((prev) => ({ ...prev, y: Number(e.target.value) || 0 }))}
+              onChange={(e) => setEditValues((prev) => ({ ...prev, yCoord: Number(e.target.value) || 0 }))}
             />
             <input
               className="location-card-input"
-              value={String(editValues.z)}
+              value={String(editValues.zCoord)}
               inputMode="numeric"
-              onChange={(e) => setEditValues((prev) => ({ ...prev, z: Number(e.target.value) || 0 }))}
+              onChange={(e) => setEditValues((prev) => ({ ...prev, zCoord: Number(e.target.value) || 0 }))}
             />
           </div>
         ) : (
           <p className="location-card-coord-text">
-            X: {isNether ? Math.trunc(x / 8) : x} Y: {isNether ? Math.trunc(y / 8) : y} Z: {isNether ? Math.trunc(z / 8) : z}
+            X: {isNether ? Math.trunc(xCoord / 8) : xCoord} Y: {isNether ? Math.trunc(yCoord / 8) : yCoord} Z: {isNether ? Math.trunc(zCoord / 8) : zCoord}
           </p>
         )}
       </div>
@@ -118,9 +118,9 @@ const LocationCard: React.FC<LocationCardProps> = ({
               onEdit(id, {
                 name: editValues.name,
                 type: editValues.type,
-                x: editValues.x,
-                y: editValues.y,
-                z: editValues.z,
+                xCoord: editValues.xCoord,
+                yCoord: editValues.yCoord,
+                zCoord: editValues.zCoord,
               });
               setIsEditing(false);
             }}
