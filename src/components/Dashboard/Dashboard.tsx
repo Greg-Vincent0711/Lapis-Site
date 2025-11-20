@@ -10,7 +10,6 @@
  * edit the way the "No Locations Yet" portion looks
  * When you refresh but are authenticated, it shouldn't take
  * you back to the homescreen
- * Add a + button at the bottom to trigger a modal to add a location
  * Add some type user acknowledgement at the top that mentions their name
  * Image support through s3
  * Dashboard needs to query by email or author_ID once theyre linked
@@ -101,17 +100,11 @@ const SavedLocationsDashboard: React.FC = () => {
           <h1 className="dashboard-title">Saved Locations</h1>
           <div style={{ display: 'flex', gap: '12px' }}>
             <button 
-              className="back_button" 
-              onClick={() => navigate('/')}
-              title="Back to home">
-              ← Back
+              className="oauth_button" 
+              onClick={testFn}
+              title="Connect to your locations saved in Discord."> 
+              Connect to Discord
             </button>
-          <button 
-            className="oauth_button" 
-            onClick={testFn}
-            title="Connect to your locations saved in Discord."> 
-            Connect to Discord
-          </button>
           </div>
         </nav>
         
@@ -145,7 +138,7 @@ const SavedLocationsDashboard: React.FC = () => {
           title="Add a new location"
           disabled={locations.length >= 10}
         >
-          + Add Location
+          Add Location
         </button>
 
         <AddLocationModal
