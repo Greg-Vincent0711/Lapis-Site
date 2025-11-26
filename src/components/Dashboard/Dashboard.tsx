@@ -15,6 +15,7 @@
 import React, { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import type { Location } from '../../types/types';
+import useAuth from '../../context/useAuth';
 import buildDiscordAuthUrl from '../../utils/OAuth';
 import LocationCard from "./LocationCard/LocationCard";
 import AddLocationModal from './AddLocationModal/AddLocationModal';
@@ -28,25 +29,25 @@ export const REDIRECT_URI = import.meta.env.REACT_APP_DISCORD_REDIRECT_URI!;
 const SavedLocationsDashboard: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
-  // const navigate = useNavigate();
+  // jwt from cognito
+  const {authToken} = useAuth();
   useEffect(() => {
     (async () => {
       try {
         /**
-         * properly check we have an author_ID to get. If not, we need to throw an error
-         * users must authenticate with discord before using the app
-         * 
+         * send cognito jwt to the db_lambda.py
          */
-        const author_ID = localStorage.getItem("author_ID");
-
-        await fetch(`${API_ENDPOINT}/locations`).then((res) => {
-          console.log(res)
-          if(res.ok){
-            return res.json();
-          } else {
-            throw new Error('Failed to fetch locations');
-          }
-        })
+        await fetch(`${API_ENDPOINT}/locations`, {
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer: ${authToken}` 
+          },
+          credentials: 'include',
+      }).then((res) => {
+        res.json();
+      }).then((userData => {
+          console.log(userData)
+      }))
         
         // const mockData: Location[] = [
         //   { id: '1', name: 'Spawn Point', type: 'Overworld', xCoord: 100, yCoord: 64, zCoord: -200 },
@@ -63,10 +64,6 @@ const SavedLocationsDashboard: React.FC = () => {
       }
     })();
   }, []);
-
-  const testFn = () => {
-    buildDiscordAuthUrl();
-  }
 
   const toggleAddLocation = () => setShowAddLocation((prev) => !prev);
 
@@ -99,7 +96,7 @@ const SavedLocationsDashboard: React.FC = () => {
           <div style={{ display: 'flex', gap: '12px' }}>
             <button 
               className="oauth_button" 
-              onClick={testFn}
+              onClick={buildDiscordAuthUrl}
               title="Connect to your locations saved in Discord."> 
               Connect to Discord
             </button>
@@ -108,7 +105,7 @@ const SavedLocationsDashboard: React.FC = () => {
         
         {locations.length === 0 ? (
           <div className="dashboard-empty-state">
-            <p className="dashboard-empty-text">No saved locations yet. Start exploring!</p>
+            <p className="dashboard-empty-text">No saved locations yet. Connect to Discord and start exploring!</p>
           </div>
         ) : (
           <main className="dashboard">

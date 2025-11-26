@@ -5,6 +5,7 @@ import type { AuthContextType } from "../types/types";
 const defaultValues: AuthContextType = {
     isLoading: false,
     currentUser: null,
+    authToken: undefined,
     userSignUp:
         async () => {throw new Error('userSignUp must be used within AuthProvider')},
     userSignIn: 

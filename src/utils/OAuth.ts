@@ -6,8 +6,6 @@
 export const CLIENT_ID = import.meta.env.VITE_APP_DISCORD_CLIENT_ID!;
 // brings users BACK to my application
 export const REDIRECT_URI = import.meta.env.VITE_APP_DISCORD_REDIRECT_URI!;
-console.log(CLIENT_ID);
-console.log(REDIRECT_URI);
 function buildDiscordAuthUrl() {
   // base auth url
   const baseURL = 'https://discord.com/api/oauth2/authorize';

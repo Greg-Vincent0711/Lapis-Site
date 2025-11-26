@@ -3,7 +3,6 @@
  * manages auth state and communication with cognito
  */
 import React, { useState, useEffect } from "react";
-// import AuthContext from "./authContext";
 import type { AuthContextType, User } from "../types/types";
 import { getCurrentUser, signIn, signOut, signUp, fetchAuthSession, fetchUserAttributes } from "@aws-amplify/auth";
 import AuthContext from "./authContext";
@@ -21,6 +20,9 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
                     const user = await getCurrentUser();
                     const name = (await fetchUserAttributes()).name;
                     setCurrentUser({...user, name});
+                    /***
+                     * authToken is the JWT given to the user by Cognito on sign in
+                     */
                     setAuthToken(tokens.idToken?.toString())
                 }
             } catch(error){
@@ -93,7 +95,7 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
         userSignIn,
         userSignOut
     }
-    
+
     return(
         // provider is a property on context object
         <AuthContext.Provider value={value}>
