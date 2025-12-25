@@ -1,6 +1,5 @@
 /**
- * TODO
- * - make the animations, error states, loading states look better
+ * this page should only render conditionally if the user hasn't already connected to discord oauth
  */
 import { useState, useEffect } from "react";
 import useAuth from "../../context/useAuth";
@@ -8,76 +7,68 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import "./CallbackPage.css";
 
 export const CallbackPage = () => {
-    const [status, setStatus] = useState("loading")
+    const [status, setStatus] = useState<"loading" | "error" | "success">("loading")
     const [searchParams, _] = useSearchParams();
     const navigate = useNavigate();
-    const {authToken} = useAuth();
+    const {jwtToken, authReady} = useAuth(); // cognito jwt
     const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
     /**
      * Explaning this useEffect call:
      * Dashboard page has a connect to discord button
      * This page is rendered on redirect back from Discord
      * Then, with the Discord facing accessToken, retrieve the author_ID
-     * Now, two updates need to happen.
      * 
-     * The frontend needs to send the cognito_id info through the authorization parameter
-     * 
-     * 
-     * The backend needs to updated such that:
-     *  - At the point we get the response from the discord API that 
-     *    contains the user's data, we need to store both the author_id from the 
-     *    discord oauth provider AND the cognito JWT in the backend
-     * 
-     *  With each request, we need to check if this combination already exists
+     * From here: 
+     * The frontend sends the cognito_id info through the authorization parameter
+     * The backend:
+     * checks if the author_ID/JWT combination exists in the backend. if it does not
+     *  - store both the author_id from the discord oauth provider AND the cognito JWT in the backend
+     *  With each request, only the JWT is an authentication mechanism
      */
     useEffect(() => {
         (async () => {
             const discordOAuthCode = searchParams.get("code");
-            // switch to the API after updating the backend code
-            fetch(`${API_ENDPOINT}/auth/callback`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer: ${authToken}` 
-                },
-                credentials: 'include',
-                // discordOAuthCode retrives discord info
-                body: JSON.stringify({ discordOAuthCode })
-            }).then((res) => res.json()).then((userData) => {
-                if(!userData.error){
-                    // save the author_ID and cognito_user_id together
-                    const author_ID = userData.id;
-                    // grab the cg_user_id
-                    // console.log(ctx)
-                    // then we need make a DB call. so should this not be done here? 
-                    localStorage.setItem("user_name", userData.global_name);
-                    setStatus("success")
+            // we need a jwt from user sign in
+            if (!authReady) return; 
+            
+            if (!jwtToken) {
+                console.log("No jwt!")
+                setStatus("error");
+                setTimeout(() => navigate("/"), 500);
+                return;
+            }
+            try {
+                const discordCallBackReq = await fetch(`${API_ENDPOINT}/auth/callback`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${jwtToken}`
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ authCode: discordOAuthCode })
+                });
+                console.log("after discord oauth call:", discordCallBackReq)
+                if (discordCallBackReq.status === 200) {
+                    setStatus("success");
                     setTimeout(() => {
-                        navigate("/dashboard")
-                    }, 500)
+                        navigate("/dashboard");
+                    }, 500);
                 } else {
-                    setStatus("error")
+                    setStatus("error");
                     setTimeout(() => {
-                        navigate("/")
-                    }, 500)
+                        navigate("/");
+                    }, 500);
                 }
-                // recieve accessTokenback 
-                // store in local storage
-                // const accessToken = responseData.accessToken
-                // console.log(responseData)
-                // setStatus("success")
-                // setTimeout(() => {
-                //     navigate("/dashboard")
-                // }, 500)
-            }).catch((_error) => {
-                // make this better
-                setStatus("error")
+            } catch (error) {
+                console.log("TESTING", error)
+                setStatus("error");
                 setTimeout(() => {
-                    navigate("/")
-                }, 500)
-            })
+                    navigate("/");
+                }, 500);
+            }
         })();
-    }, [])
+        // reauthenticate if need be
+    }, [jwtToken]);
 
 
     return (
@@ -87,7 +78,6 @@ export const CallbackPage = () => {
             {status === "success" && <h1>Success! Redirecting you to your Dashboard.</h1>}
         </main>
     )
-
 }
 
 export default CallbackPage;

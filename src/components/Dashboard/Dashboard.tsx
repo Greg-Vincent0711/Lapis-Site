@@ -1,7 +1,11 @@
 /**
- * Connect to api gw with author id(grab from discord?)
- *  - we need some type of check OAuth function
- *  - creating a button to check oAuth
+ * we need some type of check OAuth function
+ * 
+ * when Saved Locations is called
+ * make a request to the DB. See if the author_ID can be queried for with the JWT
+ * If it can, don't render Connect to Discord button
+ * 
+ * 
  * useEffect call grabs 10 different locations max
  * disable + button if more than 10 locations are used
  * map them to a state array, populate a list of cards 
@@ -10,15 +14,15 @@
  * you back to the homescreen
  * Add some type user acknowledgement at the top that mentions their name
  * Image support through s3
- * Dashboard needs to query by email or author_ID once theyre linked
+ * Frontend should be able to add - coordinates
  */
 import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
 import type { Location } from '../../types/types';
 import useAuth from '../../context/useAuth';
 import buildDiscordAuthUrl from '../../utils/OAuth';
 import LocationCard from "./LocationCard/LocationCard";
 import AddLocationModal from './AddLocationModal/AddLocationModal';
+import checkTokensAndFetch from '../../utils/checkToken';
 import type { NewLocationPayload } from '../../types/types';
 import "./Dashboard.css";
 
@@ -28,51 +32,78 @@ export const REDIRECT_URI = import.meta.env.REACT_APP_DISCORD_REDIRECT_URI!;
 
 const SavedLocationsDashboard: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
-  const [showAddLocation, setShowAddLocation] = useState(false);
+  const [shouldShowAddLocation, setShouldShowAddLocation] = useState(false);
   // jwt from cognito
-  const {authToken} = useAuth();
+  const {jwtToken} = useAuth();
   useEffect(() => {
-    (async () => {
+    /**
+     * 
+     */
+    const getUserLocationsOnLoad = async () => {
       try {
-        /**
-         * send cognito jwt to the db_lambda.py
-         */
         await fetch(`${API_ENDPOINT}/locations`, {
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer: ${authToken}` 
-          },
+            'Authorization': `${jwtToken}`},
           credentials: 'include',
       }).then((res) => {
         res.json();
       }).then((userData => {
-          console.log(userData)
-      }))
-        
-        // const mockData: Location[] = [
-        //   { id: '1', name: 'Spawn Point', type: 'Overworld', xCoord: 100, yCoord: 64, zCoord: -200 },
-        //   { id: '2', name: 'Village', type: 'Overworld', xCoord: 450, yCoord: 72, zCoord: 320 },
-        //   { id: '3', name: 'Nether Portal', type: 'Nether', xCoord: 56, yCoord: 70, zCoord: -25 },
-        //   { id: '4', name: 'End Portal', type: 'Stronghold', xCoord: -890, yCoord: 42, zCoord: 1200 },
-        //   { id: '5', name: 'Base', type: 'Overworld', xCoord: 1200, yCoord: 65, zCoord: -450 },
-        //   { id: '6', name: 'Mine', type: 'Underground', xCoord: 100, yCoord: -32, zCoord: -200 },
-        // ];
-        
+        // setLocations(userData) once you have the shape
+          console.log("User's data", userData)
+      })) 
         // setLocations(mockData);
       } catch (error) {
         console.error('Failed to fetch locations:', error);
       }
-    })();
+    }
+    getUserLocationsOnLoad();
   }, []);
 
-  const toggleAddLocation = () => setShowAddLocation((prev) => !prev);
+  const toggleAddLocation = () => setShouldShowAddLocation((prev) => !prev);
 
-  const handleAddLocation = (payload: NewLocationPayload) => {
+  const handleAddLocation = async (payload: NewLocationPayload) => {
     const newLocation: Location = {
       id: Date.now().toString(),
       ...payload
     };
-    setLocations((prev) => [...prev, newLocation]);
+    /**
+     * newLocation data example: 
+     * {"id":"1765129213053","name":"test","type":"test","xCoord":0,"yCoord":64,"zCoord":0}
+     */
+
+    try {
+      console.log("Current JWT", jwtToken)
+      if(jwtToken){
+        const payload = JSON.parse(atob(jwtToken.split('.')[1]))
+        console.log(payload.exp * 1000 < Date.now());
+      }
+    //   const data = await checkTokensAndFetch(`${API_ENDPOINT}/locations`, {
+    //     method: "POST",
+    //     body: JSON.stringify(newLocation),
+    // });
+
+      const res = await checkTokensAndFetch(`${API_ENDPOINT}/locations`, {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify(newLocation),
+      });
+      
+      console.log(res)
+      // handle HTTP errors explicitly
+      if (!res.ok) {
+        const errorBody = await res.json();
+        throw new Error(errorBody.error || `Request failed: ${res.status}`);
+      }
+    
+      const data = await res.json();
+      // add to table for user
+      console.log(data);
+    
+    } catch (error) {
+      console.error('Create location failed:', error);
+    }
+    
   };
 
   const handleImageUpload = (id: string, file: File) => {
@@ -80,11 +111,38 @@ const SavedLocationsDashboard: React.FC = () => {
     setLocations((prev) => prev.map((loc) => (loc.id === id ? { ...loc, imageUrl: objectUrl } : loc)));
   };
 
-  const handleDelete = (id: string) => {
-    setLocations((prev) => prev.filter((loc) => loc.id !== id));
+  const handleDelete = async (locationName: string) => {
+    // try{
+    //   await fetch(`${API_ENDPOINT}/locations/${locationName}`, {
+    //     method: 'DELETE',
+    //     headers: { 
+    //         'Content-Type': 'application/json',
+    //         'Authorization': authToken
+    //     },
+    //     credentials: 'include',
+    //   }) 
+    // } catch(error){
+    //   console.error(error)
+    // }
   };
 
-  const handleEdit = (id: string, updates: Pick<Location, 'name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => {
+  const handleEdit = async (id: string, updates: Pick<Location, 'name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => {
+    // try{
+    //   await fetch(`${API_ENDPOINT}/locations`, {
+    //     method: 'PUT',
+    //     headers: { 
+    //         'Content-Type': 'application/json',
+    //         'Authorization': authToken
+    //     },
+    //     credentials: 'include',
+    //     body: JSON.stringify(newLocation)
+    //   }).then((res) => res.json()).then((test) => {
+            // add to table for user
+            // setLocations((prev) => [...prev, newLocation]);
+    //   })
+    // } catch(error){
+    //   console.error(error)
+    // }
     setLocations((prev) => prev.map((loc) => (loc.id === id ? { ...loc, ...updates } : loc)));
   };
 
@@ -93,7 +151,8 @@ const SavedLocationsDashboard: React.FC = () => {
       <div className="dashboard-content">
         <nav className="dashboard-nav">
           <h1 className="dashboard-title">Saved Locations</h1>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          {
+            <div style={{ display: 'flex', gap: '12px' }}>
             <button 
               className="oauth_button" 
               onClick={buildDiscordAuthUrl}
@@ -101,6 +160,7 @@ const SavedLocationsDashboard: React.FC = () => {
               Connect to Discord
             </button>
           </div>
+          }
         </nav>
         
         {locations.length === 0 ? (
@@ -137,7 +197,7 @@ const SavedLocationsDashboard: React.FC = () => {
         </button>
 
         <AddLocationModal
-          show={showAddLocation}
+          shouldShow={shouldShowAddLocation}
           toggle={toggleAddLocation}
           onSubmit={handleAddLocation}
         />

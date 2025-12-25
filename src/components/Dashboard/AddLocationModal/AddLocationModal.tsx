@@ -3,20 +3,21 @@ import type { FormEvent } from 'react';
 import '../../AuthModal/AuthModal.css';
 import type { AddLocationModalProps, NewLocationPayload } from '../../../types/types';
 
-const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSubmit }) => {
+const AddLocationModal: React.FC<AddLocationModalProps> = ({ shouldShow, toggle, onSubmit }) => {
   const [error, setError] = useState('');
   const [form, setForm] = useState<NewLocationPayload>({ name: '', type: '', xCoord: 0, yCoord: 64, zCoord: 0 });
 
   useEffect(() => {
     if (error) {
-      const t = setTimeout(() => setError(''), 2500);
-      return () => clearTimeout(t);
+      const errTimeout = setTimeout(() => setError(''), 2500);
+      return () => clearTimeout(errTimeout);
     }
   }, [error]);
 
-  const update = (field: keyof NewLocationPayload, value: string) => {
+  const updateFields = (field: keyof NewLocationPayload, value: string) => {
     if (field === 'xCoord' || field === 'yCoord' || field === 'zCoord') {
       const num = Number(value);
+      // error check the different coordinate values
       setForm((prev) => ({ ...prev, [field]: Number.isNaN(num) ? 0 : num }));
     } else {
       setForm((prev) => ({ ...prev, [field]: value }));
@@ -37,14 +38,15 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
       setError(msg);
       return;
     }
+    // leads to POST req call in Dashboard.tsx
     onSubmit(form);
     toggle();
-    // reset for next open
+    // reset
     setForm({ name: '', type: '', xCoord: 0, yCoord: 64, zCoord: 0 });
   };
 
   return (
-    show && (
+    shouldShow && (
       <main className="overlay" onClick={toggle}>
         <form className="modal_form" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
           <h2 className="modal_title">Add New Location</h2>
@@ -52,14 +54,14 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
           <input
             placeholder="Name"
             value={form.name}
-            onChange={(e) => update('name', e.target.value)}
+            onChange={(e) => updateFields('name', e.target.value)}
             required
           />
 
           <input
             placeholder="Type (e.g., Overworld, Nether)"
             value={form.type}
-            onChange={(e) => update('type', e.target.value)}
+            onChange={(e) => updateFields('type', e.target.value)}
             required
           />
 
@@ -67,7 +69,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
             placeholder="X"
             inputMode="numeric"
             value={String(form.xCoord)}
-            onChange={(e) => update('xCoord', e.target.value)}
+            onChange={(e) => updateFields('xCoord', e.target.value)}
             required
           />
 
@@ -75,7 +77,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
             placeholder="Y"
             inputMode="numeric"
             value={String(form.yCoord)}
-            onChange={(e) => update('yCoord', e.target.value)}
+            onChange={(e) => updateFields('yCoord', e.target.value)}
             required
           />
 
@@ -83,7 +85,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ show, toggle, onSub
             placeholder="Z"
             inputMode="numeric"
             value={String(form.zCoord)}
-            onChange={(e) => update('zCoord', e.target.value)}
+            onChange={(e) => updateFields('zCoord', e.target.value)}
             required
           />
 

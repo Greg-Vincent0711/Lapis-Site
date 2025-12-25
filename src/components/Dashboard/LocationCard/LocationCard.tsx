@@ -27,17 +27,17 @@ const LocationCard: React.FC<LocationCardProps> = ({
   const [editValues, setEditValues] = useState({ name, type, xCoord, yCoord, zCoord});
   const netherHoverText = `Convert coordinates\nbetween Nether and Overworld`
 
-  useEffect(() => {
-    // keep local edit values in sync when props change externally
-    setEditValues({ name, type, xCoord, yCoord, zCoord});
-  }, [name, type, xCoord, yCoord, zCoord]);
-
   const onCopy = () => {
     setDidCopy(true)
     navigator.clipboard.writeText(`${name} - ${xCoord} ${yCoord} ${zCoord}`);
   };
 
   const toggleNether = () => setIsNether(!isNether);
+
+  useEffect(() => {
+    // keep prop values in sync
+    setEditValues({ name, type, xCoord, yCoord, zCoord});
+  }, [name, type, xCoord, yCoord, zCoord]);
 
   useEffect(() => {
     setTimeout(() => {

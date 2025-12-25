@@ -1,6 +1,6 @@
 /**
  * Component provides the data context wrapped components have access to 
- * manages auth state and communication with cognito
+ * manages auth state and communication with cognito, provides cognito token
  */
 import React, { useState, useEffect } from "react";
 import type { AuthContextType, User } from "../types/types";
@@ -9,7 +9,8 @@ import AuthContext from "./authContext";
 export default function AuthProvider({ children } : {children: React.ReactNode}){
     const [isLoading, setIsLoading] = useState(false);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const [authToken, setAuthToken] = useState<string | undefined>("")
+    const [authReady, setAuthReady] = useState(false);
+    const [jwtToken, setJWToken] = useState<string | undefined>("")
 
     // we need a useEffect to look for the current user on app load
     useEffect(() => {
@@ -23,11 +24,13 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
                     /***
                      * authToken is the JWT given to the user by Cognito on sign in
                      */
-                    setAuthToken(tokens.idToken?.toString())
+                    setJWToken(tokens.idToken?.toString())
                 }
             } catch(error){
                 // nothing catches this error, maybe show a toast in the future
                 console.error("Error retrieving session: ", error);
+            } finally {
+                setAuthReady(true);
             }
         };
         checkAuth();
@@ -90,7 +93,8 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
     const value: AuthContextType = {
         isLoading,
         currentUser,
-        authToken,
+        jwtToken,
+        authReady,
         userSignUp,
         userSignIn,
         userSignOut

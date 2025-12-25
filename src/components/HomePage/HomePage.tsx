@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../Logo/Logo';
 import Explanation from '../Explanation/Explanation';
@@ -6,9 +6,6 @@ import ArchitectureDiagram from '../Architecture/ArchitectureDiagram/Architectur
 import AuthModal from '../AuthModal/AuthModal';
 import useAuth from '../../context/useAuth';
 import "./HomePage.css"
-
-
-
 /**
  * TODO
  * - Setup Dashboard page
@@ -20,7 +17,7 @@ const HomePage: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
   const toggleModal = () => setShowLogin(!showLogin);
   const { currentUser, userSignOut } = useAuth();
-  const handleClick = () => {
+  const handleLogin = () => {
     if(currentUser == null){
       toggleModal();
     } else{
@@ -30,7 +27,6 @@ const HomePage: React.FC = () => {
       userSignOut();
     }
   }
-
   return (
       <div className="app-container">
         <section className="sidebar">
@@ -38,12 +34,12 @@ const HomePage: React.FC = () => {
             <li><a href="#logo">Lapis.bot</a></li>
             <li><a href="#ex">What can Lapis do?</a></li>
             <li><a href="#design">System Architecture</a></li>
-            {/** ProtectedRoute checks currentUser */}
+            {/** ProtectedRoute checks currentUser in main.tsx */}
             {currentUser && <li><Link to="/dashboard"> Saved Locations </Link></li>}
           </ul>
         </section>
         <section className="login_bar">
-            <button className="login_button" onClick={handleClick}>{currentUser == null ? "Sign In" : "Sign Out"}</button>
+            <button className="login_button" onClick={handleLogin}>{currentUser == null ? "Sign In" : "Sign Out"}</button>
         </section>
 
         <main className="main-content">

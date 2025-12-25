@@ -45,7 +45,8 @@ export type AuthContextType = {
     // user information that other components need
     // currentUser infers isSignedIn too
     currentUser: User | null;
-    authToken: string | undefined;
+    jwtToken: string | undefined;
+    authReady: boolean;
     userSignUp: (name: string, email: string, password: string) => Promise<SignUpOutput>;
     userSignIn: (email: string, password: string) => Promise<void>;
     // gets info from getCurrentUser
@@ -73,7 +74,7 @@ export type LocationCardProps = {
     yCoord: number;
     zCoord: number;
     onEdit: (id: string, updates: Pick<Location, 'name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => void;
-    onDelete: (id: string) => void;
+    onDelete: (locationName: string) => void;
     imageUrl?: string;
     onImageUpload: (id: string, file: File) => void;
 }
@@ -87,7 +88,7 @@ export type NewLocationPayload = {
   };
   
   export type AddLocationModalProps = {
-    show: boolean;
+    shouldShow: boolean;
     toggle: () => void;
     onSubmit: (payload: NewLocationPayload) => void;
   };
