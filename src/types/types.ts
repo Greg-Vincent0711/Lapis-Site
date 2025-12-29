@@ -56,7 +56,7 @@ export type AuthContextType = {
 // shape of data retrieved from api request
 export type Location = {
     id: string;
-    name: string;
+    location_name: string;
     type: string;
     xCoord: number;
     yCoord: number;
@@ -68,19 +68,19 @@ export type Location = {
   // shape of react component
 export type LocationCardProps = {
     id: string;
-    name: string;
+    location_name: string;
     type: string;
     xCoord: number;
     yCoord: number;
     zCoord: number;
-    onEdit: (id: string, updates: Pick<Location, 'name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => void;
-    onDelete: (locationName: string) => void;
+    onEdit: (id: string, updates: Pick<Location, 'location_name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => void;
+    onDelete: (locationId: string) => void;
     imageUrl?: string;
     onImageUpload: (id: string, file: File) => void;
 }
 
 export type NewLocationPayload = {
-    name: string;
+    location_name: string;
     type: string;
     xCoord: number;
     yCoord: number;

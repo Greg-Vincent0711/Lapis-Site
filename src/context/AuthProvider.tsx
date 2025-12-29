@@ -10,7 +10,7 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
     const [isLoading, setIsLoading] = useState(false);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [authReady, setAuthReady] = useState(false);
-    const [jwtToken, setJWToken] = useState<string | undefined>("")
+    const [jwtToken, setJWToken] = useState<string | undefined>(undefined)
 
     // we need a useEffect to look for the current user on app load
     useEffect(() => {
@@ -19,8 +19,13 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
                 const { tokens } = await fetchAuthSession();
                 if (tokens){
                     const user = await getCurrentUser();
-                    const name = (await fetchUserAttributes()).name;
-                    setCurrentUser({...user, name});
+                    try {
+                        const name = (await fetchUserAttributes()).name;
+                        setCurrentUser({...user, name});
+                    } catch (error) {
+                        console.error('Failed to fetch user attributes:', error);
+                        setCurrentUser(user); // Set user without name
+                    }
                     /***
                      * authToken is the JWT given to the user by Cognito on sign in
                      */
@@ -71,11 +76,22 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
         // error is caught by the login component
         setIsLoading(true);
         try{    
-                await signIn({username: email, password: password})
-                const user = await getCurrentUser();
+            await signIn({username: email, password: password})
+            const user = await getCurrentUser();
+            try {
                 const name = (await fetchUserAttributes()).name;
                 setCurrentUser({...user, name});
-            } 
+            } catch (error) {
+                console.error('Failed to fetch user attributes:', error);
+                setCurrentUser(user); // Set user without name
+            }
+            
+            // Fetch and set JWT token after sign in
+            const { tokens } = await fetchAuthSession();
+            if (tokens) {
+                setJWToken(tokens.idToken?.toString());
+            }
+        } 
         finally{
             setIsLoading(false);
         }   
@@ -85,8 +101,9 @@ export default function AuthProvider({ children } : {children: React.ReactNode})
         try {
             await signOut();
         } finally {
-            // Always clear user, even if signOut failed
+            // Always clear user and token, even if signOut failed
             setCurrentUser(null);
+            setJWToken(undefined);
         }
     }
 

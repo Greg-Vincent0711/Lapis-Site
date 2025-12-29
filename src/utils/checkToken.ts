@@ -49,8 +49,8 @@ async function getValidIdToken(): Promise<string | null> {
 export default async function checkTokensAndFetch(url: string, options: RequestInit = {}) {
   const idToken = await getValidIdToken();
   if (!idToken) {
-    console.error("No valid ID token, redirecting to login");
-    window.location.href = "/login";
+    console.error("No valid ID token, redirecting to home");
+    window.location.href = "/";
     return null;
   }
 
@@ -66,6 +66,7 @@ export default async function checkTokensAndFetch(url: string, options: RequestI
     const errorBody = await response.json().catch(() => ({}));
     throw new Error(errorBody.error || `Request failed: ${response.status}`);
   }
+  console.log("Response from running query", response)
   // return an empty object on failure
   return response.json().catch(() => ({}));
 }
