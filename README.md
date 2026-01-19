@@ -1,5 +1,3 @@
-# Lapis.bot Website
-
 A web application for managing Minecraft location coordinates saved through the Lapis Discord bot. This site provides a user-friendly interface to view, add, edit, and delete saved locations, complementing the Discord bot's command-based interface.
 
 ## Phase
