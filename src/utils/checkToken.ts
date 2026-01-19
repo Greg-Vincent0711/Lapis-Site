@@ -53,7 +53,6 @@ export default async function checkTokensAndFetch(url: string, options: RequestI
     window.location.href = "/";
     return null;
   }
-
   const headers = {
     // keep headers passed in
     ...options.headers,
@@ -62,11 +61,10 @@ export default async function checkTokensAndFetch(url: string, options: RequestI
   };
 
   const response = await fetch(url, { ...options, headers });
+  console.log("Response from running query", response)
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));
     throw new Error(errorBody.error || `Request failed: ${response.status}`);
   }
-  console.log("Response from running query", response)
-  // return an empty object on failure
-  return response.json().catch(() => ({}));
+  return await response.json();
 }

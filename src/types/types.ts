@@ -1,4 +1,7 @@
-import type { SignInOutput, SignUpOutput } from "@aws-amplify/auth";
+/**
+ * Update this file to have more succint types(combine where possible)
+ */
+import type { SignUpOutput } from "@aws-amplify/auth";
 export type ArchitectureNode = {
     id: string;
     title: string;

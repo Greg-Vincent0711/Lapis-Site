@@ -10,7 +10,7 @@ import './LocationCard.css';
 
 const LocationCard: React.FC<LocationCardProps> = ({
   id,
-  name,
+  location_name,
   type,
   xCoord,
   yCoord,
@@ -24,20 +24,20 @@ const LocationCard: React.FC<LocationCardProps> = ({
   const [didCopy, setDidCopy] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editValues, setEditValues] = useState({ name, type, xCoord, yCoord, zCoord});
+  const [editValues, setEditValues] = useState({ location_name, type, xCoord, yCoord, zCoord});
   const netherHoverText = `Convert coordinates\nbetween Nether and Overworld`
 
   const onCopy = () => {
     setDidCopy(true)
-    navigator.clipboard.writeText(`${name} - ${xCoord} ${yCoord} ${zCoord}`);
+    navigator.clipboard.writeText(`${location_name} - ${xCoord} ${yCoord} ${zCoord}`);
   };
 
   const toggleNether = () => setIsNether(!isNether);
 
   useEffect(() => {
     // keep prop values in sync
-    setEditValues({ name, type, xCoord, yCoord, zCoord});
-  }, [name, type, xCoord, yCoord, zCoord]);
+    setEditValues({ location_name, type, xCoord, yCoord, zCoord});
+  }, [location_name, type, xCoord, yCoord, zCoord]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -60,11 +60,11 @@ const LocationCard: React.FC<LocationCardProps> = ({
           {isEditing ? (
             <input
               className="location-card-input"
-              value={editValues.name}
-              onChange={(e) => setEditValues((prev) => ({ ...prev, name: e.target.value }))}
+              value={editValues.location_name}
+              onChange={(e) => setEditValues((prev) => ({ ...prev, location_name: e.target.value }))}
             />
           ) : (
-            name
+            location_name
           )}
         </h3>
         {isEditing ? (
@@ -116,7 +116,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
           <button
             onClick={() => {
               onEdit(id, {
-                name: editValues.name,
+                location_name: editValues.location_name,
                 type: editValues.type,
                 xCoord: editValues.xCoord,
                 yCoord: editValues.yCoord,

@@ -21,13 +21,14 @@
  */
 import React, { useState, useEffect } from 'react';
 import type { Location } from '../../types/types';
-import useAuth from '../../context/useAuth';
-import buildDiscordAuthUrl from '../../utils/OAuth';
+// import useAuth from '../../context/useAuth';
+// import buildDiscordAuthUrl from '../../utils/OAuth';
 import LocationCard from "./LocationCard/LocationCard";
 import AddLocationModal from './AddLocationModal/AddLocationModal';
 import checkTokensAndFetch from '../../utils/checkToken';
 import normalizeCoords from "../../utils/utility";
 import type { NewLocationPayload } from '../../types/types';
+import { v4 as uuidv4 } from 'uuid';
 import { fetchAuthSession } from '@aws-amplify/auth';
 import "./Dashboard.css";
 
@@ -42,48 +43,30 @@ export const REDIRECT_URI = import.meta.env.VITE_APP_DISCORD_REDIRECT_URI!;
 const SavedLocationsDashboard: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [shouldShowAddLocation, setShouldShowAddLocation] = useState(false);
-  const [isDiscordConnected, setIsDiscordConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   // jwt from cognito
-  const {jwtToken} = useAuth();
+  // const {jwtToken} = useAuth();
 
   useEffect(() => {
     const getUserLocationsOnLoad = async () => {
       try {
-        const retrieveLocations = await checkTokensAndFetch(`${API_ENDPOINT}/locations`, {
+        const retrievedAPIData = await checkTokensAndFetch(`${API_ENDPOINT}/locations`, {
           method: "GET",
           credentials: "include"
-        });
-        
-        if (retrieveLocations && Array.isArray(retrieveLocations)) {
-          const userLocations = normalizeCoords(retrieveLocations);
-          setLocations(userLocations);
-        } else {
-          setLocations([]);
-        }
-      } catch (error) {
+        });      
+        //
+        console.log("retrieved locations", retrievedAPIData.locations)    
+        const userLocations: Location[] = normalizeCoords(retrievedAPIData.locations);
+        console.log(userLocations)
+        setLocations(userLocations);
+        } catch (error) {
         console.error('Failed to fetch locations:', error);
         setError('Failed to load locations. Please try again.');
         setLocations([]);
       }
     };
-    
-    const checkDiscordConnection = async () => {
-      try {
-        const response = await checkTokensAndFetch(`${API_ENDPOINT}/auth/discord-status`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        setIsDiscordConnected(response?.connected || false);
-      } catch (error) {
-        // If endpoint doesn't exist yet, default to false
-        setIsDiscordConnected(false);
-      }
-    };
-    
     getUserLocationsOnLoad();
-    checkDiscordConnection();
   }, []); // API_ENDPOINT is a module-level constant, doesn't need to be in deps
 
   const toggleAddLocation = () => setShouldShowAddLocation((prev) => !prev);
@@ -97,22 +80,29 @@ const SavedLocationsDashboard: React.FC = () => {
     setSuccessMessage(null);
     
     // we need to change newLocation for the DB
-    const newLocationForDB = {
-      id: Date.now().toString(),
+    const newLocFormatted_DB = {
+      id: uuidv4(),
       ...rest,
       coords: `${xCoord}, ${yCoord}, ${zCoord}`
     };
+
     try {
       const res = await checkTokensAndFetch(`${API_ENDPOINT}/locations`, {
         method: 'POST',
         credentials: 'include',
-        body: JSON.stringify(newLocationForDB),
+        body: JSON.stringify(newLocFormatted_DB),
       });
     
       if (res) {
-        // Add to local state
-        const normalizedLocation = normalizeCoords(res);
-        setLocations((prev) => [...prev, normalizedLocation]);
+        const newLocation: Location = {
+            id: Date.now().toString(),
+            location_name: payload.location_name,
+            type: payload.type,
+            xCoord: payload.xCoord,
+            yCoord: payload.yCoord,
+            zCoord: payload.zCoord,
+          }
+        setLocations((prev) => [...prev, newLocation]);
         setSuccessMessage('Location added successfully!');
         setTimeout(() => setSuccessMessage(null), 3000);
       }
@@ -223,16 +213,6 @@ const SavedLocationsDashboard: React.FC = () => {
       <div className="dashboard-content">
         <nav className="dashboard-nav">
           <h1 className="dashboard-title">Saved Locations</h1>
-          {!isDiscordConnected && (
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button 
-                className="oauth_button" 
-                onClick={buildDiscordAuthUrl}
-                title="Connect to your locations saved in Discord."> 
-                Connect to Discord
-              </button>
-            </div>
-          )}
         </nav>
         
         {error && (

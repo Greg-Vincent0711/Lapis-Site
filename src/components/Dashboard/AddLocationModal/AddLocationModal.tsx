@@ -5,7 +5,7 @@ import type { AddLocationModalProps, NewLocationPayload } from '../../../types/t
 
 const AddLocationModal: React.FC<AddLocationModalProps> = ({ shouldShow, toggle, onSubmit }) => {
   const [error, setError] = useState('');
-  const [form, setForm] = useState<NewLocationPayload>({ name: '', type: '', xCoord: 0, yCoord: 64, zCoord: 0 });
+  const [form, setForm] = useState<NewLocationPayload>({ location_name: '', type: '', xCoord: 0, yCoord: 64, zCoord: 0 });
 
   useEffect(() => {
     if (error) {
@@ -25,7 +25,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ shouldShow, toggle,
   };
 
   const validate = () => {
-    if (!form.name.trim()) return 'Name is required.';
+    if (!form.location_name.trim()) return 'Name is required.';
     if (!form.type.trim()) return 'Type is required.';
     if (!Number.isFinite(form.xCoord) || !Number.isFinite(form.yCoord) || !Number.isFinite(form.zCoord)) return 'Coordinates must be numbers.';
     return '';
@@ -42,7 +42,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ shouldShow, toggle,
     onSubmit(form);
     toggle();
     // reset
-    setForm({ name: '', type: '', xCoord: 0, yCoord: 64, zCoord: 0 });
+    setForm({ location_name: '', type: '', xCoord: 0, yCoord: 64, zCoord: 0 });
   };
 
   return (
@@ -53,8 +53,8 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({ shouldShow, toggle,
 
           <input
             placeholder="Name"
-            value={form.name}
-            onChange={(e) => updateFields('name', e.target.value)}
+            value={form.location_name}
+            onChange={(e) => updateFields('location_name', e.target.value)}
             required
           />
 
