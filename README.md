@@ -4,7 +4,7 @@ A web application for managing Minecraft location coordinates saved through the 
 
 ## Phase
 
-Project is currently in Phase 1 of development - setting up the basic features
+Project is currently in Phase 1 of development - setting up the features
 listed below. 
 
 ## Purpose
