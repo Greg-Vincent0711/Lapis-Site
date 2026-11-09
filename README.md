@@ -28,7 +28,6 @@ The website serves as a dashboard where authenticated users can:
 - **React Three Fiber (drei)** - 3D graphics and visualizations
 
 ### Backend Infrastructure (AWS)
-- **EC2** - Hosts the Discord bot and handles user interactions
 - **API Gateway** - RESTful API endpoints for the website and bot
 - **Lambda** - Serverless functions for CRUD operations and seed processing
 - **DynamoDB** - NoSQL database storing location data and user information
