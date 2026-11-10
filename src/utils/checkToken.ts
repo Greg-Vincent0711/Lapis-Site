@@ -6,6 +6,24 @@
  */
 import { fetchAuthSession } from "@aws-amplify/auth";
 
+/**
+ * Error thrown for any non-2xx API response. `message` is the server's
+ * user-facing error text; `status` lets callers branch (e.g. 403 = Discord not linked).
+ */
+export class ApiError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+/** Pull a user-facing message out of anything thrown by checkTokensAndFetch. */
+export function errorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
 function isTokenExpired(idToken: string): boolean {
   if (!idToken) return true;
   const payload = JSON.parse(atob(idToken.split('.')[1]));
@@ -61,10 +79,9 @@ export default async function checkTokensAndFetch(url: string, options: RequestI
   };
 
   const response = await fetch(url, { ...options, headers });
-  console.log("Response from running query", response)
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({}));
-    throw new Error(errorBody.error || `Request failed: ${response.status}`);
+    const body = await response.json().catch(() => ({}));
+    throw new ApiError(response.status, body.error ?? body.message ?? `Request failed: ${response.status}`);
   }
   return await response.json();
 }

@@ -1,7 +1,7 @@
 /**
  * this page should only render conditionally if the user hasn't already connected to discord oauth
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useAuth from "../../context/useAuth";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "./CallbackPage.css";
@@ -11,6 +11,9 @@ export const CallbackPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const {jwtToken, authReady} = useAuth(); // cognito jwt
+    // Discord auth codes are single-use; StrictMode runs effects twice in dev,
+    // so make sure the code is only ever posted once
+    const hasPostedCode = useRef(false);
     const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
     
     if (!API_ENDPOINT) {
@@ -35,6 +38,10 @@ export const CallbackPage = () => {
                 return;
             }
             
+            if (hasPostedCode.current) {
+                return;
+            }
+
             const discordOAuthCode = searchParams.get("code");
             // we need a jwt from user sign in 
 
@@ -44,8 +51,8 @@ export const CallbackPage = () => {
                 setTimeout(() => navigate("/"), 500);
                 return;
             }
+            hasPostedCode.current = true;
             try {
-                // swap to use correct fetch api
                 const discordCallBackReq = await fetch(`${API_ENDPOINT}/auth/callback`, {
                     method: 'POST',
                     headers: { 
@@ -55,7 +62,6 @@ export const CallbackPage = () => {
                     credentials: 'include',
                     body: JSON.stringify({ authCode: discordOAuthCode })
                 });
-                console.log("after discord oauth call:", discordCallBackReq)
                 if (discordCallBackReq.status === 200) {
                     setStatus("success");
                     setTimeout(() => {
@@ -68,7 +74,7 @@ export const CallbackPage = () => {
                     }, 500);
                 }
             } catch (error) {
-                console.log("TESTING", error)
+                console.error("Discord callback failed:", error)
                 setStatus("error");
                 setTimeout(() => {
                     navigate("/");

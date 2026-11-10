@@ -18,13 +18,16 @@ const LocationCard: React.FC<LocationCardProps> = ({
   onDelete,
   onEdit,
   imageUrl,
-  onImageUpload
+  onImageUpload,
+  onImageRemove
 }) => {
   const [isNether, setIsNether] = useState(false);
   const [didCopy, setDidCopy] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editValues, setEditValues] = useState({ location_name, type, xCoord, yCoord, zCoord});
+  // raw strings while editing so a lone "-" isn't coerced to 0; converted on save
+  const [editValues, setEditValues] = useState({ xCoord: String(xCoord), yCoord: String(yCoord), zCoord: String(zCoord) });
+  const [editError, setEditError] = useState('');
   const netherHoverText = `Convert coordinates\nbetween Nether and Overworld`
 
   const onCopy = () => {
@@ -36,8 +39,21 @@ const LocationCard: React.FC<LocationCardProps> = ({
 
   useEffect(() => {
     // keep prop values in sync
-    setEditValues({ location_name, type, xCoord, yCoord, zCoord});
-  }, [location_name, type, xCoord, yCoord, zCoord]);
+    setEditValues({ xCoord: String(xCoord), yCoord: String(yCoord), zCoord: String(zCoord) });
+  }, [xCoord, yCoord, zCoord]);
+
+  const isInteger = (value: string) => /^-?\d+$/.test(value.trim());
+
+  const saveEdit = () => {
+    const { xCoord: x, yCoord: y, zCoord: z } = editValues;
+    if (!isInteger(x) || !isInteger(y) || !isInteger(z)) {
+      setEditError('Coordinates must be whole numbers.');
+      return;
+    }
+    setEditError('');
+    onEdit(id, { xCoord: Number(x), yCoord: Number(y), zCoord: Number(z) });
+    setIsEditing(false);
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -57,25 +73,10 @@ const LocationCard: React.FC<LocationCardProps> = ({
           }}
           title={imageUrl ? 'Open image in new tab' : undefined}
         >
-          {isEditing ? (
-            <input
-              className="location-card-input"
-              value={editValues.location_name}
-              onChange={(e) => setEditValues((prev) => ({ ...prev, location_name: e.target.value }))}
-            />
-          ) : (
-            location_name
-          )}
+          {/* name and type can't be changed through the API; only coordinates are editable */}
+          {location_name}
         </h3>
-        {isEditing ? (
-          <input
-            className="location-card-input location-card-input-type"
-            value={editValues.type}
-            onChange={(e) => setEditValues((prev) => ({ ...prev, type: e.target.value }))}
-          />
-        ) : (
-          <span className="location-card-type-badge">{type}</span>
-        )}
+        <span className="location-card-type-badge">{type}</span>
       </div>
       
       <div className="location-card-coordinates">
@@ -83,22 +84,26 @@ const LocationCard: React.FC<LocationCardProps> = ({
           <div className="location-card-coord-edit">
             <input
               className="location-card-input"
-              value={String(editValues.xCoord)}
+              value={editValues.xCoord}
               inputMode="numeric"
-              onChange={(e) => setEditValues((prev) => ({ ...prev, xCoord: Number(e.target.value) || 0 }))}
+              aria-label="X"
+              onChange={(e) => setEditValues((prev) => ({ ...prev, xCoord: e.target.value }))}
             />
             <input
               className="location-card-input"
-              value={String(editValues.yCoord)}
+              value={editValues.yCoord}
               inputMode="numeric"
-              onChange={(e) => setEditValues((prev) => ({ ...prev, yCoord: Number(e.target.value) || 0 }))}
+              aria-label="Y"
+              onChange={(e) => setEditValues((prev) => ({ ...prev, yCoord: e.target.value }))}
             />
             <input
               className="location-card-input"
-              value={String(editValues.zCoord)}
+              value={editValues.zCoord}
               inputMode="numeric"
-              onChange={(e) => setEditValues((prev) => ({ ...prev, zCoord: Number(e.target.value) || 0 }))}
+              aria-label="Z"
+              onChange={(e) => setEditValues((prev) => ({ ...prev, zCoord: e.target.value }))}
             />
+            {editError && <p className="error_message">{editError}</p>}
           </div>
         ) : (
           <p className="location-card-coord-text">
@@ -114,16 +119,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
         
         {isEditing ? (
           <button
-            onClick={() => {
-              onEdit(id, {
-                location_name: editValues.location_name,
-                type: editValues.type,
-                xCoord: editValues.xCoord,
-                yCoord: editValues.yCoord,
-                zCoord: editValues.zCoord,
-              });
-              setIsEditing(false);
-            }}
+            onClick={saveEdit}
             className="location-card-button location-card-button-edit"
           >
             <span>Confirm</span>
@@ -144,7 +140,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
 
         <input
           type="file"
-          accept="image/*"
+          accept="image/png,image/jpeg"
           ref={fileInputRef}
           style={{ display: 'none' }}
           onChange={(e) => {
@@ -162,8 +158,18 @@ const LocationCard: React.FC<LocationCardProps> = ({
           className="location-card-button location-card-button-upload"
           title="Upload an image for this location"
         >
-          <span>Upload image</span>
+          <span>{imageUrl ? "Replace image" : "Upload image"}</span>
         </button>
+
+        {imageUrl && (
+          <button
+            onClick={() => onImageRemove(id)}
+            className="location-card-button location-card-button-upload"
+            title="Remove the image for this location"
+          >
+            <span>Remove image</span>
+          </button>
+        )}
       </div>
     </main>
   );

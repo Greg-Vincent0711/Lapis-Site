@@ -68,6 +68,12 @@ export type Location = {
   }
 
 
+// the only values the API accepts for `type`
+export const LOCATION_TYPES = ["Overworld", "Nether", "The End"] as const;
+
+// the API can only update coordinates; name and type are fixed after creation
+export type CoordUpdates = Pick<Location, 'xCoord' | 'yCoord' | 'zCoord'>;
+
   // shape of react component
 export type LocationCardProps = {
     id: string;
@@ -76,10 +82,11 @@ export type LocationCardProps = {
     xCoord: number;
     yCoord: number;
     zCoord: number;
-    onEdit: (id: string, updates: Pick<Location, 'location_name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => void;
+    onEdit: (id: string, updates: CoordUpdates) => void;
     onDelete: (locationId: string) => void;
     imageUrl?: string;
     onImageUpload: (id: string, file: File) => void;
+    onImageRemove: (id: string) => void;
 }
 
 export type NewLocationPayload = {
@@ -93,6 +100,7 @@ export type NewLocationPayload = {
   export type AddLocationModalProps = {
     shouldShow: boolean;
     toggle: () => void;
-    onSubmit: (payload: NewLocationPayload) => void;
+    // resolves to the API's error message, or null on success
+    onSubmit: (payload: NewLocationPayload) => Promise<string | null>;
   };
   
