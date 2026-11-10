@@ -6,7 +6,6 @@
  * If it can, don't render Connect to Discord button
  * 
  * 
- * useEffect call grabs 10 different locations max
  * 
  * disable + button if more than 10 locations are used
  * 
@@ -17,19 +16,15 @@
  * you back to the homescreen
  * Add some type user acknowledgement at the top that mentions their name
  * Image support through s3
- * Frontend should be able to add - coordinates
  */
 import React, { useState, useEffect } from 'react';
-import type { Location } from '../../types/types';
-// import useAuth from '../../context/useAuth';
-// import buildDiscordAuthUrl from '../../utils/OAuth';
+import type { Location, CoordUpdates } from '../../types/types';
 import LocationCard from "./LocationCard/LocationCard";
 import AddLocationModal from './AddLocationModal/AddLocationModal';
-import checkTokensAndFetch from '../../utils/checkToken';
+import buildDiscordAuthUrl from '../../utils/OAuth';
+import checkTokensAndFetch, { ApiError, errorMessage } from '../../utils/checkToken';
 import normalizeCoords from "../../utils/utility";
 import type { NewLocationPayload } from '../../types/types';
-import { v4 as uuidv4 } from 'uuid';
-import { fetchAuthSession } from '@aws-amplify/auth';
 import "./Dashboard.css";
 
 const API_ENDPOINT = import.meta.env.VITE_APP_API_ENDPOINT;
@@ -37,16 +32,36 @@ if (!API_ENDPOINT) {
   throw new Error('VITE_APP_API_ENDPOINT is not defined');
 }
 
-export const CLIENT_ID = import.meta.env.VITE_APP_DISCORD_CLIENT_ID!;
-export const REDIRECT_URI = import.meta.env.VITE_APP_DISCORD_REDIRECT_URI!;
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg'];
+
+// the location name is the key in every API path
+const locationUrl = (name: string) => `${API_ENDPOINT}/locations/${encodeURIComponent(name)}`;
+
+const readFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 
 const SavedLocationsDashboard: React.FC = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [shouldShowAddLocation, setShouldShowAddLocation] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needDiscordConnect, toggleNeedDiscordConnect] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  // jwt from cognito
-  // const {jwtToken} = useAuth();
+
+  const showSuccess = (msg: string) => {
+    setSuccessMessage(msg);
+    setTimeout(() => setSuccessMessage(null), 3000);
+  };
+
+  const showError = (msg: string) => {
+    setError(msg);
+    setTimeout(() => setError(null), 5000);
+  };
 
   useEffect(() => {
     const getUserLocationsOnLoad = async () => {
@@ -54,157 +69,144 @@ const SavedLocationsDashboard: React.FC = () => {
         const retrievedAPIData = await checkTokensAndFetch(`${API_ENDPOINT}/locations`, {
           method: "GET",
           credentials: "include"
-        });      
-        //
-        console.log("retrieved locations", retrievedAPIData.locations)    
-        const userLocations: Location[] = normalizeCoords(retrievedAPIData.locations);
-        console.log(userLocations)
-        setLocations(userLocations);
-        } catch (error) {
-        console.error('Failed to fetch locations:', error);
-        setError('Failed to load locations. Please try again.');
+        });
+        // null means there was no valid token and checkTokensAndFetch is redirecting home
+        if (!retrievedAPIData) return;
+        // [] is a normal empty state for a linked user
+        setLocations(normalizeCoords(retrievedAPIData.locations ?? []));
+        toggleNeedDiscordConnect(false);
+      } catch (error) {
         setLocations([]);
+        if (error instanceof ApiError && error.status === 403) {
+          // Discord not linked yet: show the Connect button, no error banner
+          toggleNeedDiscordConnect(true);
+          return;
+        }
+        console.error('Failed to fetch locations:', error);
+        setError(errorMessage(error, 'Failed to load locations. Please try again.'));
       }
     };
     getUserLocationsOnLoad();
   }, []); // API_ENDPOINT is a module-level constant, doesn't need to be in deps
 
   const toggleAddLocation = () => setShouldShowAddLocation((prev) => !prev);
-  /**
-     * newLocation data example: 
-     * {"id":"1765129213053","location_name":"test","type":"test","xCoord":0,"yCoord":64,"zCoord":0}
-     */
-  const handleAddLocation = async (payload: NewLocationPayload) => {
-    const { xCoord, yCoord, zCoord, ...rest } = payload;
+
+  // returns the API's error message, or null on success
+  const handleAddLocation = async (payload: NewLocationPayload): Promise<string | null> => {
+    const { location_name, type, xCoord, yCoord, zCoord } = payload;
     setError(null);
     setSuccessMessage(null);
-    
-    // we need to change newLocation for the DB
-    const newLocFormatted_DB = {
-      id: uuidv4(),
-      ...rest,
-      coords: `${xCoord}, ${yCoord}, ${zCoord}`
-    };
 
     try {
       const res = await checkTokensAndFetch(`${API_ENDPOINT}/locations`, {
         method: 'POST',
         credentials: 'include',
-        body: JSON.stringify(newLocFormatted_DB),
+        body: JSON.stringify({ location_name, type, coords: `${xCoord}, ${yCoord}, ${zCoord}` }),
       });
-    
-      if (res) {
-        const newLocation: Location = {
-            id: Date.now().toString(),
-            location_name: payload.location_name,
-            type: payload.type,
-            xCoord: payload.xCoord,
-            yCoord: payload.yCoord,
-            zCoord: payload.zCoord,
-          }
-        setLocations((prev) => [...prev, newLocation]);
-        setSuccessMessage('Location added successfully!');
-        setTimeout(() => setSuccessMessage(null), 3000);
-      }
+      if (!res) return 'Your session expired. Please sign in again.';
+
+      const savedName: string = res.location_name ?? location_name;
+      setLocations((prev) => [
+        ...prev,
+        { id: savedName, location_name: savedName, type, xCoord, yCoord, zCoord },
+      ]);
+      showSuccess('Location added successfully!');
+      return null;
     } catch (error) {
       console.error('handle add location failed:', error);
-      setError('Failed to add location. Please try again.');
-      setTimeout(() => setError(null), 5000);
+      // covers 409 duplicate names, 400 bad input and the 10-location limit
+      return errorMessage(error, 'Failed to add location. Please try again.');
     }
   };
 
-  const handleImageUpload = async (id: string, file: File) => {
+  const handleImageUpload = async (name: string, file: File) => {
     setError(null);
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      showError('Images must be PNG or JPEG.');
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      showError('Images must be 4 MB or smaller.');
+      return;
+    }
+
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('locationId', id);
-      
-      // For FormData, we need to get the token manually and not use checkTokensAndFetch
-      // since it sets Content-Type to application/json
-      const session = await fetchAuthSession({ forceRefresh: true });
-      const idToken = session.tokens?.idToken?.toString();
-      
-      if (!idToken) {
-        throw new Error('No valid authentication token');
-      }
-      
-      const response = await fetch(`${API_ENDPOINT}/locations/${id}/image`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${idToken}`,
-        },
+      const dataUrl = await readFileAsDataUrl(file);
+      const res = await checkTokensAndFetch(`${locationUrl(name)}/img`, {
+        method: 'PUT',
         credentials: 'include',
-        body: formData,
+        body: JSON.stringify({ image_base64: dataUrl, content_type: file.type }),
       });
-      
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(errorBody.error || `Upload failed: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      
-      if (result?.imageUrl) {
-        setLocations((prev) => prev.map((loc) => 
-          (loc.id === id ? { ...loc, imageUrl: result.imageUrl } : loc)
+
+      if (res?.imageUrl) {
+        setLocations((prev) => prev.map((loc) =>
+          (loc.id === name ? { ...loc, imageUrl: res.imageUrl } : loc)
         ));
-        setSuccessMessage('Image uploaded successfully!');
-        setTimeout(() => setSuccessMessage(null), 3000);
+        showSuccess('Image uploaded successfully!');
       }
     } catch (error) {
       console.error('Image upload failed:', error);
-      setError('Failed to upload image. Please try again.');
-      setTimeout(() => setError(null), 5000);
+      showError(errorMessage(error, 'Failed to upload image. Please try again.'));
     }
   };
 
-  const handleDelete = async (locationId: string) => {
+  const handleImageRemove = async (name: string) => {
+    setError(null);
+    if (!window.confirm('Remove the image for this location?')) {
+      return;
+    }
+
+    try {
+      await checkTokensAndFetch(`${locationUrl(name)}/img`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      setLocations((prev) => prev.map((loc) =>
+        (loc.id === name ? { ...loc, imageUrl: undefined } : loc)
+      ));
+      showSuccess('Image removed.');
+    } catch (error) {
+      console.error('Image removal failed:', error);
+      showError(errorMessage(error, 'Failed to remove image. Please try again.'));
+    }
+  };
+
+  const handleDelete = async (name: string) => {
     setError(null);
     if (!window.confirm('Are you sure you want to delete this location?')) {
       return;
     }
-    
+
     try {
-      await checkTokensAndFetch(`${API_ENDPOINT}/locations/${locationId}`, {
+      await checkTokensAndFetch(locationUrl(name), {
         method: 'DELETE',
         credentials: 'include',
       });
-      setLocations((prev) => prev.filter((loc) => loc.id !== locationId));
-      setSuccessMessage('Location deleted successfully!');
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setLocations((prev) => prev.filter((loc) => loc.id !== name));
+      showSuccess('Location deleted successfully!');
     } catch (error) {
       console.error('Delete failed:', error);
-      setError('Failed to delete location. Please try again.');
-      setTimeout(() => setError(null), 5000);
+      showError(errorMessage(error, 'Failed to delete location. Please try again.'));
     }
   };
 
-  const handleEdit = async (id: string, updates: Pick<Location, 'location_name' | 'type' | 'xCoord' | 'yCoord' | 'zCoord'>) => {
+  const handleEdit = async (name: string, updates: CoordUpdates) => {
     setError(null);
     setSuccessMessage(null);
-    
+
     try {
-      const { xCoord, yCoord, zCoord, ...rest } = updates;
-      const locationForDB = {
-        id,
-        ...rest,
-        coords: `${xCoord}, ${yCoord}, ${zCoord}`
-      };
-      
-      await checkTokensAndFetch(`${API_ENDPOINT}/locations`, {
+      const { xCoord, yCoord, zCoord } = updates;
+      await checkTokensAndFetch(locationUrl(name), {
         method: 'PUT',
         credentials: 'include',
-        body: JSON.stringify(locationForDB),
+        body: JSON.stringify({ coords: `${xCoord}, ${yCoord}, ${zCoord}` }),
       });
-      
-      setLocations((prev) => prev.map((loc) => (loc.id === id ? { ...loc, ...updates } : loc)));
-      setSuccessMessage('Location updated successfully!');
-      setTimeout(() => setSuccessMessage(null), 3000);
+
+      setLocations((prev) => prev.map((loc) => (loc.id === name ? { ...loc, ...updates } : loc)));
+      showSuccess('Location updated successfully!');
     } catch (error) {
       console.error('Edit failed:', error);
-      setError('Failed to update location. Please try again.');
-      setTimeout(() => setError(null), 5000);
+      showError(errorMessage(error, 'Failed to update location. Please try again.'));
     }
   };
 
@@ -213,6 +215,14 @@ const SavedLocationsDashboard: React.FC = () => {
       <div className="dashboard-content">
         <nav className="dashboard-nav">
           <h1 className="dashboard-title">Saved Locations</h1>
+          {needDiscordConnect && (
+            <button 
+              className="oauth_button" 
+              onClick={buildDiscordAuthUrl}
+              title="Connect to your locations saved in Discord."> 
+              Connect to Discord
+          </button>
+          )}
         </nav>
         
         {error && (
@@ -241,7 +251,11 @@ const SavedLocationsDashboard: React.FC = () => {
         
         {locations.length === 0 ? (
           <div className="dashboard-empty-state">
-            <p className="dashboard-empty-text">No saved locations yet. Connect to Discord and start exploring!</p>
+            <p className="dashboard-empty-text">
+              {needDiscordConnect
+                ? 'Connect to Discord to see your saved locations.'
+                : 'No saved locations yet. Add one to start exploring!'}
+            </p>
           </div>
         ) : (
           <main className="dashboard">
@@ -258,6 +272,7 @@ const SavedLocationsDashboard: React.FC = () => {
                 onEdit={handleEdit}
                 imageUrl={location.imageUrl}
                 onImageUpload={handleImageUpload}
+                onImageRemove={handleImageRemove}
               />
             ))}
           </main>
@@ -267,7 +282,7 @@ const SavedLocationsDashboard: React.FC = () => {
           className="add_location_button"
           onClick={toggleAddLocation}
           title="Add a new location"
-          disabled={locations.length >= 10}
+          disabled={needDiscordConnect || locations.length >= 10}
         >
           Add Location
         </button>

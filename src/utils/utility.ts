@@ -1,8 +1,11 @@
 import type { Location } from '../types/types';
 
-type LocationFromDB = Location & {
-  Location_Name: string;  
-  Coordinates: string;
+// shape of a location as returned by GET /locations
+type LocationFromDB = {
+  Location_Name: string;
+  Coordinates: string; // "x,y,z"
+  Type: string;
+  Image_URL?: string;
 };
 
 export function normalizeOne(location: LocationFromDB): Location {
@@ -11,8 +14,11 @@ export function normalizeOne(location: LocationFromDB): Location {
     .map(coord => Number(coord.trim()));
 
   return {
-    ...location,
+    // the API has no location id; the name is the key
+    id: location.Location_Name,
     location_name: location.Location_Name,
+    type: location.Type,
+    imageUrl: location.Image_URL,
     xCoord,
     yCoord,
     zCoord,
@@ -22,7 +28,6 @@ export function normalizeOne(location: LocationFromDB): Location {
 export default function normalizeCoords(input: LocationFromDB | LocationFromDB[]): Location[] {
   if (Array.isArray(input)) {
     return input.map(normalizeOne);
-  }  
+  }
   return []
 }
-
