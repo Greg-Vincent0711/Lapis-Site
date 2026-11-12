@@ -1,46 +1,32 @@
-import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Logo from '../Logo/Logo';
 import Explanation from '../Explanation/Explanation';
 import ArchitectureDiagram from '../Architecture/ArchitectureDiagram/ArchitectureDiagram';
 import AuthModal from '../AuthModal/AuthModal';
-import useAuth from '../../context/useAuth';
+import SiteNav from '../SiteNav/SiteNav';
 import "./HomePage.css"
 /**
  * TODO
  * - Setup Dashboard page
- * - Responsive design setup 
  * - Accessibility stuff
  * - Adding some other advanced feature(i11n maybe)
  */
 const HomePage: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
   const toggleModal = () => setShowLogin(!showLogin);
-  const { currentUser, userSignOut } = useAuth();
-  const handleLogin = () => {
-    if(currentUser == null){
-      toggleModal();
-    } else{
-      /**
-       * we don't need to toggle, since the modal shouldn't be open here
-       */
-      userSignOut();
+  const { hash } = useLocation();
+
+  // arriving from another page via /#section: the router doesn't scroll to the anchor on its own
+  useEffect(() => {
+    if (hash) {
+      document.getElementById(hash.slice(1))?.scrollIntoView();
     }
-  }
+  }, [hash]);
+
   return (
       <div className="app-container">
-        <section className="sidebar">
-          <ul>
-            <li><a href="#logo">Lapis.bot</a></li>
-            <li><a href="#ex">What can Lapis do?</a></li>
-            <li><a href="#design">System Architecture</a></li>
-            {/** ProtectedRoute checks currentUser in main.tsx */}
-            {currentUser && <li><Link to="/dashboard"> Saved Locations </Link></li>}
-          </ul>
-        </section>
-        <section className="login_bar">
-            <button className="login_button" onClick={handleLogin}>{currentUser == null ? "Sign In" : "Sign Out"}</button>
-        </section>
+        <SiteNav page="home" onSignIn={toggleModal}/>
 
         <main className="main-content">
               <Logo id={"logo"}/>

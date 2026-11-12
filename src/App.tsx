@@ -4,7 +4,6 @@ import HomePage from './components/HomePage/HomePage';
 /**
  * TODO
  * - Finish dashboard page setup, specifics in LocationCard/Dashboard
- * - Responsive design setup 
  * - Accessibility stuff
  * - Adding some other advanced feature(i11n maybe)
  */

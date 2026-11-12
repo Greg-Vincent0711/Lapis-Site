@@ -61,6 +61,17 @@
   height: 44px;
 }
 
+/* the back button is a router link, so give it button layout */
+.dashboard-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  margin-bottom: 24px;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
 .back_button:hover {
   background: #ffffff22;
   transform: translateY(-1px);
@@ -127,4 +138,71 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+/* tablet & phone: the shared top app bar replaces the back button */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    padding-top: calc(56px + 24px + env(safe-area-inset-top));
+  }
+
+  .dashboard-back {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding:
+      calc(56px + 20px + env(safe-area-inset-top))
+      max(16px, env(safe-area-inset-right))
+      /* leave room so the floating button never covers the last card */
+      calc(100px + env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+  }
+
+  .dashboard-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding-bottom: 1.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 28px;
+    margin-bottom: 0;
+  }
+
+  .oauth_button {
+    width: 100%;
+    height: 52px;
+    font-size: 1.1rem;
+  }
+
+  .dashboard-empty-state {
+    padding: 24px 20px;
+    min-height: 200px;
+  }
+
+  .dashboard-empty-text {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  .dashboard {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 16px;
+  }
+
+  .add_location_button {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    height: 52px;
+    z-index: 10;
+  }
+
+  .add_location_button:hover {
+    transform: none;
+  }
 }

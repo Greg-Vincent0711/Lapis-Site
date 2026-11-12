@@ -18,7 +18,9 @@
  * Image support through s3
  */
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import type { Location, CoordUpdates } from '../../types/types';
+import SiteNav from '../SiteNav/SiteNav';
 import LocationCard from "./LocationCard/LocationCard";
 import AddLocationModal from './AddLocationModal/AddLocationModal';
 import buildDiscordAuthUrl from '../../utils/OAuth';
@@ -212,7 +214,12 @@ const SavedLocationsDashboard: React.FC = () => {
 
   return (
     <div className="dashboard-container">
+      {/* top app bar on tablet/phone; desktop uses the back button below */}
+      <SiteNav page="dashboard" />
       <div className="dashboard-content">
+        <Link to="/" className="back_button dashboard-back">
+          <span aria-hidden="true">←</span> Back to Home
+        </Link>
         <nav className="dashboard-nav">
           <h1 className="dashboard-title">Saved Locations</h1>
           {needDiscordConnect && (

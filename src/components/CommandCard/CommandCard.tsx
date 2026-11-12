@@ -25,9 +25,12 @@ export default function CommandCard() {
         </div>
         <div className="pagination-dots">
           {commandInfo.map((_, i) => (
-            <div 
-              key={i} 
+            <button
+              type="button"
+              key={i}
               className={`dot ${i === index ? 'active' : ''}`}
+              aria-label={`Show command ${i + 1}`}
+              aria-current={i === index}
               onClick={() => setIndex(i)}
             />
           ))}

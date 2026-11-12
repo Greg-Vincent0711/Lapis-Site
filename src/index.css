@@ -9,8 +9,33 @@ html, body{
 }
 
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 section {
   min-height: 100vh;
   scroll-snap-align: start;
+}
+
+@media (max-width: 1024px) {
+  html, body {
+    /* mandatory snapping traps scrolling inside sections taller than the screen */
+    scroll-snap-type: y proximity;
+    /* anchor links land below the fixed top bar */
+    scroll-padding-top: calc(56px + env(safe-area-inset-top));
+  }
+
+  section {
+    /* svh ignores the collapsing browser toolbar on mobile */
+    min-height: 100svh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html, body {
+    scroll-behavior: auto;
+  }
 }
 
