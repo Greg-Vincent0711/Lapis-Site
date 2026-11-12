@@ -25,7 +25,7 @@ The website serves as a dashboard where authenticated users can:
 - **React Router DOM** - Client-side routing
 - **AWS Amplify** - Authentication via AWS Cognito
 - **Reagraph** - Interactive graph visualization for system architecture
-- **React Three Fiber (drei)** - 3D graphics and visualizations
+
 
 ### Backend Infrastructure (AWS)
 - **API Gateway** - RESTful API endpoints for the website and bot
