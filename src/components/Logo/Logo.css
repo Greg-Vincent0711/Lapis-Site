@@ -37,3 +37,30 @@
     50% { transform: translateY(-60px); }
     100% { transform: translateY(0px); }
   }
+
+  @media (max-width: 1024px) {
+    .logo_section {
+      height: auto;
+      min-height: calc(100svh - 56px - env(safe-area-inset-top));
+      justify-content: center;
+      gap: 0.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .logo_section h1 {
+      font-size: clamp(3rem, 16vw, 4rem);
+      margin: 0;
+    }
+
+    .logo_section h2 {
+      font-size: clamp(1.25rem, 6vw, 1.75rem);
+    }
+
+    .logo_section img {
+      width: min(62vw, 260px);
+      height: auto;
+      /* float only on tablet/desktop widths */
+      animation: none;
+    }
+  }

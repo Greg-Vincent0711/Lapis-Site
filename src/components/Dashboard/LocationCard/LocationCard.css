@@ -138,3 +138,72 @@
   background-color: #f9fafb;
   color: #6b7280;
 }
+
+@media (max-width: 768px) {
+  .location-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 18px;
+  }
+
+  .location-card-header {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .location-card-name {
+    min-width: 0;
+    font-size: 18px;
+    overflow-wrap: anywhere;
+  }
+
+  .location-card-coord-text {
+    font-size: 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .location-card-coord-edit {
+    flex-wrap: wrap;
+  }
+
+  /* three coordinate inputs share the row instead of overflowing */
+  .location-card-coord-edit .location-card-input {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .location-card-coord-edit .error_message {
+    flex-basis: 100%;
+    margin: 4px 0 0;
+  }
+
+  /* 16px+ prevents iOS Safari from zooming in on focus */
+  .location-card-input,
+  .location-card-input-type {
+    font-size: 16px;
+    height: 36px;
+    line-height: 34px;
+  }
+
+  .location-card-input-type {
+    min-width: 0;
+    flex: 1 1 140px;
+  }
+
+  .location-card-button {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: 40px;
+    padding: 10px 12px;
+  }
+
+  .location-card-button span {
+    margin-left: 0;
+  }
+
+  .location-card-button-nether {
+    min-width: 0;
+  }
+}

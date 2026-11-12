@@ -5,70 +5,6 @@
     color: white;
 }
   
-.sidebar{
-    width: 210px;
-    margin-top: 2rem;
-    position: fixed;
-    font-size: 1.3rem;
-    color: white;
-    top: 0;
-}
-
-.login_bar{
-    width: 210px;
-    margin-top: 3rem;
-    position: fixed;
-    font-size: 1.3rem;
-    color: white;
-    top: 0;
-    /* set this distance away from the viewport's right edge*/
-    right: 0;
-}
-
-.login_button{
-    /* glassmorphism effect */
-    background: rgba(255, 255, 255, 0.28);
-    /* creates the frosted glass look */
-    backdrop-filter: blur(10px);
-    /* slightly more opaque defined edge */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10%;
-    /* box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.37); */
-    color: white;
-    width: 75px;
-    height: 40px;
-    font-size: 15px;
-}
-
-.login_button:hover{
-    color: rgba(255,255,255,0.8);
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.sidebar ul li{
-    list-style-type: none;
-}
-
-.sidebar li{
-    margin-bottom: 2.5rem;
-}
-
-.sidebar a {
-    text-decoration: none; 
-    color: inherit;        
-    outline: none;
-    font-size: 18px;       
-}
-
-.sidebar a:hover{
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.sidebar li:last-child{
-    display: flex;
-    flex-direction: column;
-}
-  
 .main-content {
     flex-grow: 1;
     display: flex;
@@ -78,4 +14,27 @@
     text-align: center;
     padding: 20px;
     min-height: 100vh;
+    /* allow children to shrink below their intrinsic width instead of overflowing */
+    min-width: 0;
+}
+
+/* desktop: keep centered content clear of the fixed sidebar / login bar */
+@media (min-width: 1025px) {
+    .main-content {
+        padding-left: 210px;
+        padding-right: 210px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .main-content {
+        padding: calc(56px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(20px, env(safe-area-inset-left));
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
 }

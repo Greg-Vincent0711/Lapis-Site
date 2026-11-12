@@ -60,7 +60,10 @@
   /* creates a circle */
   width: 8px;
   height: 8px;
+  padding: 0;
+  border: none;
   border-radius: 50%;
+  position: relative;
   background: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -170,20 +173,68 @@
 
 @media (max-width: 768px) {
   .explanation-section {
-    padding: 1rem;
+    padding: 1.5rem 0 2rem;
   }
 
   .command-card {
-    padding: 1.5rem;
+    padding: 1.25rem;
+    min-height: 0;
+    border-radius: 14px;
+  }
+
+  /* hover lift feels "stuck" after a tap on touch screens */
+  .command-card:hover {
+    transform: none;
   }
 
   .command-header {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
+    margin-bottom: 1rem;
   }
 
-  .story-text {
-    font-size: 1rem;
+  .command-prefix,
+  .command-name {
+    font-size: 1.3rem;
+  }
+
+  .command-name {
+    overflow-wrap: anywhere;
+    text-align: left;
+  }
+
+  .pagination-dots {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* enlarge the tap target without changing the visual size */
+  .dot::after {
+    content: "";
+    position: absolute;
+    inset: -7px;
+  }
+
+  .command-content {
+    margin-bottom: 1.25rem;
+  }
+
+  .command-description {
+    font-size: 1.05rem;
+  }
+
+  .navigation-controls {
+    padding-top: 1rem;
+  }
+
+  .nav-button {
+    width: 44px;
+    height: 44px;
   }
 }

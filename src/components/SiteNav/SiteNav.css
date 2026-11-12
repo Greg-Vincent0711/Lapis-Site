@@ -1,0 +1,204 @@
+.sidebar{
+    width: 210px;
+    margin-top: 2rem;
+    position: fixed;
+    font-size: 1.3rem;
+    color: white;
+    top: 0;
+}
+
+.login_bar{
+    width: 210px;
+    margin-top: 3rem;
+    position: fixed;
+    font-size: 1.3rem;
+    color: white;
+    top: 0;
+    /* set this distance away from the viewport's right edge*/
+    right: 0;
+}
+
+.login_button{
+    /* glassmorphism effect */
+    background: rgba(255, 255, 255, 0.28);
+    /* creates the frosted glass look */
+    backdrop-filter: blur(10px);
+    /* slightly more opaque defined edge */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10%;
+    /* box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.37); */
+    color: white;
+    width: 75px;
+    height: 40px;
+    font-size: 15px;
+}
+
+.login_button:hover{
+    color: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.sidebar ul li{
+    list-style-type: none;
+}
+
+.sidebar li{
+    margin-bottom: 2.5rem;
+}
+
+.sidebar a {
+    text-decoration: none; 
+    color: inherit;        
+    outline: none;
+    font-size: 18px;       
+}
+
+.sidebar a:hover{
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar li:last-child{
+    display: flex;
+    flex-direction: column;
+}
+
+/* mobile-only controls are hidden on desktop */
+.menu_toggle,
+.mobile_brand {
+    display: none;
+}
+
+/* ---------- Tablet & phone: top app bar ---------- */
+@media (max-width: 1024px) {
+    .site_header {
+        --bar-height: 56px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 800;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-sizing: border-box;
+        height: calc(var(--bar-height) + env(safe-area-inset-top));
+        padding: env(safe-area-inset-top) max(12px, env(safe-area-inset-right)) 0 max(8px, env(safe-area-inset-left));
+        background: rgba(74, 74, 255, 0.8);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .menu_toggle {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .menu_toggle:active {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .menu_toggle_bar {
+        display: block;
+        width: 22px;
+        height: 2px;
+        border-radius: 2px;
+        background: white;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .menu_open .menu_toggle_bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .menu_open .menu_toggle_bar:nth-child(2) { opacity: 0; }
+    .menu_open .menu_toggle_bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile_brand {
+        display: block;
+        flex: 1;
+        color: white;
+        text-decoration: none;
+        font-size: 1.15rem;
+        font-weight: 700;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* dropdown menu */
+    .sidebar {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: auto;
+        margin: 0;
+        background: rgba(74, 74, 255, 0.96);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        display: none;
+    }
+
+    .menu_open .sidebar {
+        display: block;
+    }
+
+    .sidebar ul {
+        margin: 0;
+        padding: 4px max(16px, env(safe-area-inset-left)) 12px;
+    }
+
+    .sidebar li,
+    .sidebar li:last-child {
+        display: block;
+        margin: 0;
+    }
+
+    /* brand already shown in the bar */
+    .sidebar li:first-child {
+        display: none;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 14px 4px;
+        font-size: 1.05rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .sidebar li:last-child a {
+        border-bottom: none;
+    }
+
+    .login_bar {
+        position: static;
+        width: auto;
+        margin: 0;
+    }
+
+    .login_button {
+        width: auto;
+        min-width: 84px;
+        height: 40px;
+        padding: 0 16px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+    }
+}
+
+/* pages with their own desktop navigation (e.g. the dashboard's back button) only show the bar on smaller screens */
+@media (min-width: 1025px) {
+    .site_header--mobile_only {
+        display: none;
+    }
+}
