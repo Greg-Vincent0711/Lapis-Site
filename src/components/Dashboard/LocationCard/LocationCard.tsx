@@ -71,7 +71,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
               window.open(imageUrl, '_blank');
             }
           }}
-          title={imageUrl ? 'Open image in new tab' : undefined}
+          title={imageUrl ? `${location_name} (open image in new tab)` : location_name}
         >
           {/* name and type can't be changed through the API; only coordinates are editable */}
           {location_name}
@@ -155,7 +155,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
 
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="location-card-button location-card-button-upload"
+          className={`location-card-button location-card-button-upload${imageUrl ? '' : ' location-card-button--wide'}`}
           title="Upload an image for this location"
         >
           <span>{imageUrl ? "Replace image" : "Upload image"}</span>
