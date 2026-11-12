@@ -4,9 +4,11 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 24px;
     transition: box-shadow 0.3s ease;
-    min-width: fit-content;
-    min-height: fit-content;
-    width: 320px;
+    box-sizing: border-box;
+    width: 340px;
+    /* column layout pins the buttons to the bottom so cards in a row line up */
+    display: flex;
+    flex-direction: column;
   }
 
 .location-card:hover {
@@ -18,15 +20,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-bottom: 12px;
   min-height: 32px; /* reserve space so inputs don't shift height */
 }
 
+/* single line so long names don't make one card taller; full name is in the tooltip */
 .location-card-name {
   font-size: 20px;
   font-weight: 600;
   color: #1f2937;
   margin: 0;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .location-card-name--image {
@@ -43,6 +51,7 @@
   border-radius: 20px;
   font-size: 14px;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .location-card-coordinates {
@@ -60,9 +69,15 @@
 
 .location-card-coord-edit {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
   min-height: 24px;
+}
+
+.location-card-coord-edit .error_message {
+  flex-basis: 100%;
+  margin: 4px 0 0;
 }
 
 .location-card-input {
@@ -75,6 +90,13 @@
   box-sizing: border-box;
 }
 
+/* the three coordinate inputs share the row instead of widening the card */
+.location-card-coord-edit .location-card-input {
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
+}
+
 .location-card-input-type {
   min-width: 120px;
   font-size: 14px;
@@ -83,35 +105,41 @@
   padding: 0 12px;
 }
 
+/*
+ * Fixed 2-column grid → every card has the same three button rows:
+ * Copy | Edit, Delete | Nether, and either a full-width Upload
+ * or Replace | Remove when the location has an image.
+ */
 .location-card-button-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
-  flex-wrap: wrap;
+  margin-top: auto;
 }
 
 .location-card-button {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   padding: 8px 12px;
   border: none;
   border-radius: 6px;
   font-size: 14px;
-  flex: 0 0 auto; 
+  white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.location-card-button--wide {
+  grid-column: 1 / -1;
 }
 
 .location-card-button:hover {
   opacity: 0.8;
 }
 
-.location-card-button span {
-  margin-left: 4px;
-}
-
 .location-card-button-copy {
-  min-width: 61px;
   background-color: #f3f4f6;
   color: #374151;
 }
@@ -127,11 +155,8 @@
 }
 
 .location-card-button-nether {
-  /* min-width: 40px !important; */
   background-color: #f3e8ff;
   color: #6b21a8;
-  min-width: 120px;
-  justify-content: center;
 }
 
 .location-card-button-upload {
@@ -142,41 +167,16 @@
 @media (max-width: 768px) {
   .location-card {
     width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
     padding: 18px;
   }
 
-  .location-card-header {
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
   .location-card-name {
-    min-width: 0;
     font-size: 18px;
-    overflow-wrap: anywhere;
   }
 
   .location-card-coord-text {
     font-size: 16px;
     overflow-wrap: anywhere;
-  }
-
-  .location-card-coord-edit {
-    flex-wrap: wrap;
-  }
-
-  /* three coordinate inputs share the row instead of overflowing */
-  .location-card-coord-edit .location-card-input {
-    flex: 1 1 0;
-    min-width: 0;
-    width: 100%;
-  }
-
-  .location-card-coord-edit .error_message {
-    flex-basis: 100%;
-    margin: 4px 0 0;
   }
 
   /* 16px+ prevents iOS Safari from zooming in on focus */
@@ -193,17 +193,7 @@
   }
 
   .location-card-button {
-    flex: 1 1 auto;
-    justify-content: center;
     min-height: 40px;
     padding: 10px 12px;
-  }
-
-  .location-card-button span {
-    margin-left: 0;
-  }
-
-  .location-card-button-nether {
-    min-width: 0;
   }
 }

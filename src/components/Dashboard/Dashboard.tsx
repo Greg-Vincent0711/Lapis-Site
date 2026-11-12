@@ -54,6 +54,7 @@ const SavedLocationsDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [needDiscordConnect, toggleNeedDiscordConnect] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const showSuccess = (msg: string) => {
     setSuccessMessage(msg);
@@ -86,6 +87,8 @@ const SavedLocationsDashboard: React.FC = () => {
         }
         console.error('Failed to fetch locations:', error);
         setError(errorMessage(error, 'Failed to load locations. Please try again.'));
+      } finally {
+        setIsLoading(false);
       }
     };
     getUserLocationsOnLoad();
@@ -256,7 +259,12 @@ const SavedLocationsDashboard: React.FC = () => {
           </div>
         )}
         
-        {locations.length === 0 ? (
+        {isLoading ? (
+          <div className="dashboard-empty-state" role="status" aria-live="polite">
+            <span className="dashboard-spinner" aria-hidden="true" />
+            <p className="dashboard-loading-text">Loading your locations...</p>
+          </div>
+        ) : locations.length === 0 ? (
           <div className="dashboard-empty-state">
             <p className="dashboard-empty-text">
               {needDiscordConnect
@@ -289,7 +297,7 @@ const SavedLocationsDashboard: React.FC = () => {
           className="add_location_button"
           onClick={toggleAddLocation}
           title="Add a new location"
-          disabled={needDiscordConnect || locations.length >= 10}
+          disabled={isLoading || needDiscordConnect || locations.length >= 10}
         >
           Add Location
         </button>
