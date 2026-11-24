@@ -1,6 +1,6 @@
 A web application for managing Minecraft location coordinates saved through the Lapis Discord bot. This site provides a user-friendly interface to view, add, edit, and delete saved locations, complementing the Discord bot's command-based interface. I.e, you don't need to use Discord if you don't want to. 
 
-Check out [Lapis Proper](https://github.com/Greg-Vincent0711/Lapis)(the backend with the bulk of the complexity...for now)
+Check out [Lapis Proper] (https://github.com/Greg-Vincent0711/Lapis)(the backend with the bulk of the complexity...for now)
 
 ## Phase
 
