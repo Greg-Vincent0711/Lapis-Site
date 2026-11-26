@@ -166,6 +166,7 @@ export default function DataUsagePolicy() {
           <strong>Everything:</strong> email{" "}
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> from your account's email address.
           We'll delete your account, locations, images and seed within 30 days.
+          You can also send <a href="discord://-users/729393558548643901"> Mugiwara1423 </a> a message on Discord.
         </li>
       </ul>
     </LegalPage>

@@ -38,10 +38,6 @@ export default function LegalPage({ title, related, children }: LegalPageProps) 
           </p>
         </header>
         {children}
-        <footer className="legal_footer">
-          Questions about this policy? Email{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
-        </footer>
       </main>
     </div>
   );

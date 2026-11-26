@@ -171,6 +171,9 @@ export default function PrivacyPolicy() {
         Email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> with any questions about
         this policy or your data.
       </p>
+      <p>
+        You can also send <a href="discord://-users/729393558548643901"> Mugiwara1423 </a> a message on discord. 
+      </p>
     </LegalPage>
   );
 }
