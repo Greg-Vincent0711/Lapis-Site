@@ -7,6 +7,8 @@ import { createBrowserRouter, RouterProvider} from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.tsx';
 import Dashboard from './components/Dashboard/Dashboard.tsx';
 import CallbackPage from './components/CallbackPage/CallbackPage.tsx';
+import PrivacyPolicy from './components/Legal/PrivacyPolicy.tsx';
+import DataUsagePolicy from './components/Legal/DataUsagePolicy.tsx';
 import './index.css'
 
 configureAmplify();
@@ -27,6 +29,14 @@ const router = createBrowserRouter([
   {
     path: "/auth/callback",
     element: <CallbackPage/>
+  },
+  {
+    path: "/privacy",
+    element: <PrivacyPolicy/>
+  },
+  {
+    path: "/data-usage",
+    element: <DataUsagePolicy/>
   }
 
 ]);

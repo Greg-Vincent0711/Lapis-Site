@@ -9,9 +9,9 @@ import useAuth from "../../context/useAuth";
 import "./SiteNav.css";
 
 type SiteNavProps = {
-  /** "home" links to sections on the same page; "dashboard" links back to them. */
-  page: "home" | "dashboard";
-  /** Opens the sign-in modal (home page only). */
+  /** "home" links to sections on the same page; other pages link back to them. */
+  page: "home" | "dashboard" | "legal";
+  /** Opens the sign-in modal (home page only; other pages send signed-out users home). */
   onSignIn?: () => void;
 };
 
@@ -25,7 +25,8 @@ export default function SiteNav({ page, onSignIn }: SiteNavProps) {
   const handleLogin = async () => {
     closeMenu();
     if (currentUser == null) {
-      onSignIn?.();
+      if (onSignIn) onSignIn();
+      else navigate("/");
       return;
     }
     await userSignOut();
@@ -68,12 +69,21 @@ export default function SiteNav({ page, onSignIn }: SiteNavProps) {
               <Link
                 to="/dashboard"
                 onClick={closeMenu}
-                aria-current={onHome ? undefined : "page"}
+                aria-current={page === "dashboard" ? "page" : undefined}
               >
                 Saved Locations
               </Link>
             </li>
           )}
+          <li>
+            <Link
+              to="/privacy"
+              onClick={closeMenu}
+              aria-current={page === "legal" ? "page" : undefined}
+            >
+              Privacy &amp; Data
+            </Link>
+          </li>
         </ul>
       </nav>
       <div className="login_bar">
