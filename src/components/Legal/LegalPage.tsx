@@ -4,7 +4,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import SiteNav from "../SiteNav/SiteNav";
-import { CONTACT_EMAIL, EFFECTIVE_DATE } from "./legalConfig";
+import { EFFECTIVE_DATE } from "./legalConfig";
 import "./LegalPage.css";
 
 type LegalPageProps = {
